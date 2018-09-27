@@ -1,0 +1,25 @@
+FIRST: Find Total Area for map == a*b == 
+|(x2-x1) + (y2-y1)|*|(x4-x3) + (y4-y3)|
+Generate an a X b map using array of open/blocks
+
+SECOND: MAKE SURE YOU Do the same for the total areas of the
+blocks, using the coordinates as guides... Generally BLock squares
+|(x2-x1) + (y2-y1)|*|(x4-x3) + (y4-y3)|
+TO MAKE ENV CONSTRUCTION EASIER, CREATE NXN Environment that blocks out part of env that cannot be reached... nxn will eliminate weird errors with traversing i+x or j+1 regions that you don't know don't exist!
+Perhaps generate the restricted env a*b first, then generate the max(a,b) * max(a,b) env, then get the intersection of those environments where, assuming 0 is wall and 1 is free space, 0&1 -> 0, 1&1 -> 1, 0&0 -> 0, 1&0 -> 0 
+
+*******************ALL THAT's NEEDED IS TO FILL THE OUTLINE OF THE POLYGON...
+** TO ALWAYS FILL IN ALL CONNECTIONS OF POLYGON, FILL IN O(N^2 -N) connections, where N is number of vertices
+*******************
+
+THIRD: Make sure number of tiles is such that bot can accurately
+travel in wide enough passages ->> if a map is 3.50 X 3.50, create env representation
+350 X 350. Cost of each movement will now be 0.01 and Heuristic H = H/100
+NEED TO CREATE A SUBSET OF MAP CONSISTING OF ALL AREAS BOT CAN MOVE TO... 
+->
+->**THIS MEANS THAT COST AND HEURISTIC FOR THIS MAP WILL DEPEND ON ROBOT SIZE...
+IF ROBOT IS LARGE ENOUGH, WOULD HAVE REACHED GOAL ON ITS EDGE.....
+
+FOURTH: INPUT WOULD BE X,Y FORMAT, as floats rounded to 100th place after the decimal
+
+FIFTH: RUN A* AND HOPE FOR THE BEST!
