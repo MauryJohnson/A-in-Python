@@ -7,7 +7,7 @@ class Fringe():
     
     #Insertion behaves like priority queue, compares F values
     def Insert(self,x):
-        print("Ascending Inserting:",x)
+        #print("Ascending Inserting:",x)
     	
 	if(x[2]<0):
 	    print("F value is invalid")
