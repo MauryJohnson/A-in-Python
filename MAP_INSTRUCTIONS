@@ -24,4 +24,4 @@ FOURTH: INPUT WOULD BE X,Y FORMAT, as floats rounded to 100th place after the de
 
 FIFTH: COMPLETE DFA*, should take a day or less....
 
-FIFTH: RUN A*,DFA* AND HOPE FOR THE BEST!
+SIXTH: RUN A*,DFA* AND HOPE FOR THE BEST!
