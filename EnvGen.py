@@ -72,10 +72,15 @@ class EnvGen():
 	        print("Found Badly Formatted Culprit:",i,end = "\n")
 		#Remove previous index and merge the two 
 		if(k>0):
-		    s = E[k-1]
-		    s+=E[k]
+		    s = ""+E[k-1]
+		    s+=""+i
+		    s.replace(" ","")
+		    g = ""+E[k]
 		    E[k] = s
+		    print("POPPING:",E[k-1],"Fixed Str:",s,end = "\n")
 		    E.pop(k-1)
+		    #if(E[k+1]==g):
+			#E.pop(k+1)
 		    
 		else:
 		    print("ERROR, Cannot Fix BAD FORMAT",end = "\n") 
@@ -107,12 +112,18 @@ class EnvGen():
 	#g.replace(' \n','HERE')
 	M = g.split(',')
 	self.FixBuff(M)
+	m = ''
+	for m in M:
+	    if(m[0]=='\n'):
+		M.remove(m)
 	#M = [s.translate(None, " ") for s in M]
 	#M.replace(' \n','\n')
 	#M.split(',')
 	#M = [s.translate(None, "\n") for s in M]
 	print(M)
-	sys.exit(-1)	
+	if(len(M)%2!=0):
+	    print("Error Parsing",end="\n")
+	    sys.exit(-1)	
 	#Distances between each point, for first case will have four
 	D = []
 	EE = []
