@@ -114,6 +114,8 @@ class EnvGen():
 	self.FixBuff(M)
 	m = ''
 	for m in M:
+	    if(len(m)==0):
+		continue
 	    if(m[0]=='\n'):
 		M.remove(m)
 	#M = [s.translate(None, " ") for s in M]
