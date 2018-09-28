@@ -13,8 +13,8 @@ class EnvGen():
  	self.FullENV = []
 	
 	#Consists of the subset env 
-	self.SubENV = []
- 	self.IntersectENV  =[]
+	#self.SubENV = []
+ 	#self.IntersectENV  =[]
 
     def is_int(self,n):
     #b = False
@@ -230,3 +230,4 @@ class EnvGen():
 	        print("",end = "\n")
 		EE.append(['---'])
 	print("[-Env-],",EE,'[-Start+Goal Pairs-]',end="\n")
+	return EE
