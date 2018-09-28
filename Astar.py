@@ -145,7 +145,7 @@ def UpdateVertex(s1,s2):
     if(First[5] + C < s2[5]):
 
 	#Found a better path, new parent	
-	s2[5] = First[5] + C
+	s2[5] = round(First[5] + C,2)
 	s2[3] = First[0]
 	s2[4] = First[1]
         ################################
@@ -184,7 +184,7 @@ def Heuristic(s1):
     #return int(math.ceil(math.sqrt((End[0]-Start[0])*(End[0]-Start[0]) + (End[1]-Start[1])*(End[1]-Start[1]) )))
     
     #Trace A* Heuristic
-    return round((math.ceil(math.sqrt(2)*min(abs(End[0]-Start[0]),abs(End[1]-Start[1])) + max(abs(End[0]-Start[0]),abs(End[1]-Start[1])) - min(abs(End[0]-Start[0]),abs(End[1]-Start[1])))/100.0),2)
+    return round((math.ceil(math.sqrt(2)*min(abs(End[0]-Start[0]),abs(End[1]-Start[1])) + max(abs(End[0]-Start[0]),abs(End[1]-Start[1])) - min(abs(End[0]-Start[0]),abs(End[1]-Start[1])))/100),2)
     
 
 #Checks if ENV representation is correct
@@ -287,6 +287,25 @@ def NonCollisions(S):
    
     #Return list of successors to S
     return GoTo
+def MaxLen():
+    global ENV
+    i = None
+    j = ''
+    Ccount = 0
+    y = -sys.maxint
+    for i in ENV:
+	Ccount = 0
+	print("If:",len(i)," >",y)
+	if(len(i)>y):
+	    y = len(i)
+	for j in i:
+	    Ccount+=1
+	    #print("If:",len(j)," >",y)
+	    #if(len(j)>y):
+	        #y = len(j)
+	if(Ccount>y):
+	    y=Ccount
+    return y
 def main():
     global Goal
     global ENV
@@ -327,14 +346,16 @@ def main():
     x = f.read().splitlines()
     f.close()
     print ("Array")
-    print (x)
+    #print (x)
     PrintENV(x)
 
-###############################################################ASSUME GRID IS NXN#######################################################################  
+###############################################################ASSUME GRID IS NXN#### AND PREFERRABLY EVEN###################################################################  
+    L = MaxLen()
+    print("MAX LENGTH:",L)
     #Midpoint used to convert neg to pos coordinate numbers for env
-    MidX = math.ceil(len(x)/2)
+    MidX = math.floor(L/2)
     #MidY = math.ceil(len(x[len(x)-1])/2)
-    MidY = MidX
+    MidY = math.floor(L/2)
 ###############################################################################################################################################################################################
 
     print("Midpoints: [%d,%d]"%(MidX,MidY))
