@@ -1,4 +1,5 @@
 from EnvGen import EnvGen
+from MapMake import mapMake
 
 import sys
 
@@ -9,6 +10,8 @@ def main():
 	sys.exit(-1)
     print("Start")
     E = EnvGen()
-    E.CreateENV(sys.argv[1])
+    M = E.CreateENV(sys.argv[1])
+
+    mapMake(M)
 if __name__=="__main__":
     main()
