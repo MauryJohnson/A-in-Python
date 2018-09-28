@@ -100,8 +100,16 @@ class EnvGen():
 	#x = ''.join(x)
     	#f.close()
     	print ("Array")
-    	print (x)
+    	#x.replace(")  ", ") ")
+	#x = ' '.join(x.split(" "))
+	x= re.sub(' +', ' ', x)
+	print (x)
+	
+	#x.replace('  ',' ')
+
+
 	y = re.split(r'()',x)
+	#y.replace("  "," ")
 	sub = ''
 	#for sub in y:
 	y = [s.translate(None, "()#") for s in y]
