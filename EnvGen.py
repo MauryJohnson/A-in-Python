@@ -159,6 +159,7 @@ class EnvGen():
 	    #if(i.count('\n')==1):
 	    Lines = i.count('\n')
 	    if(Lines>0):
+		
 		L2 = (''.join(i).split('\n'))#split('')
 		print("Strings With New Lines:",L2[1:])
 	
@@ -202,7 +203,8 @@ class EnvGen():
 			        #EE.append(['-Start+Goal Pairs-'])	    	
 			else:
 			    EE.append(['-Start+Goal Pairs-']) 
-	        continue
+		EE.append(["NEXT LINE"])	        
+		continue
 	    #pairs = 0	
 
 	    if(pairs==0):
