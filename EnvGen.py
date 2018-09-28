@@ -58,6 +58,35 @@ class EnvGen():
 	 #   print("ADD B2")
 	  #  B[1] = X
 	   # return
+    def FixBuff(self,E):
+	i = ''
+	k = 0
+	j = 0
+	#Check if find new line as first char
+	for i in E:
+	    if(len(i)==0):
+		#E.pop(k)
+		#k-=1
+		continue
+	    if(i[0]=="\n"):
+	        print("Found Badly Formatted Culprit:",i,end = "\n")
+		#Remove previous index and merge the two 
+		if(k>0):
+		    s = E[k-1]
+		    s+=E[k]
+		    E[k] = s
+		    E.pop(k-1)
+		    
+		else:
+		    print("ERROR, Cannot Fix BAD FORMAT",end = "\n") 
+		    sys.exit(-2)
+	
+		
+	    #while(j<len(i)):
+		
+		
+		#j+=1
+	    k+=1
     def CreateENV(self,m):
 	printf = functools.partial
 	#f = open('m','r')
@@ -72,10 +101,18 @@ class EnvGen():
 	#for sub in y:
 	y = [s.translate(None, "()#") for s in y]
 	y = ''.join(y)
+	#y.replace('  \n','\n')
 	y = re.split(' ',y)
-	M = (','.join(y).replace('---','')).split(',')
+	g = ','.join(y).replace('---','')
+	#g.replace(' \n','HERE')
+	M = g.split(',')
+	self.FixBuff(M)
+	#M = [s.translate(None, " ") for s in M]
+	#M.replace(' \n','\n')
+	#M.split(',')
 	#M = [s.translate(None, "\n") for s in M]
-	print(M)	
+	print(M)
+	sys.exit(-1)	
 	#Distances between each point, for first case will have four
 	D = []
 	EE = []
@@ -140,8 +177,10 @@ class EnvGen():
 			elif(type==1 or type==2):
 			    EE.append(['-BLOCKS-'])
 			    type+=1
-			    EE.append(['-Start+Goal Pairs-'])	    	
-
+			    #if(type==2):
+			        #EE.append(['-Start+Goal Pairs-'])	    	
+			else:
+			    EE.append(['-Start+Goal Pairs-']) 
 	        continue
 	    #pairs = 0	
 
