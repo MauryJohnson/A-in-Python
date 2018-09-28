@@ -121,9 +121,9 @@ class EnvGen():
 	#M.split(',')
 	#M = [s.translate(None, "\n") for s in M]
 	print(M)
-	if(len(M)%2!=0):
-	    print("Error Parsing",end="\n")
-	    sys.exit(-1)	
+	#if(len(M)%2!=0):
+	    #print("Error Parsing",end="\n")
+	    #sys.exit(-1)	
 	#Distances between each point, for first case will have four
 	D = []
 	EE = []
