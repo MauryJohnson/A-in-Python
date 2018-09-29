@@ -11,11 +11,11 @@ class Fringe():
     	
 	if(x[2]<0):
 	    print("F value is invalid")
-	    return
+	    return -1
 	
 	if(self.List == []):
 	    self.List.append(x)
-	    return
+	    return 0
 	i = None
 	
 	k = 0
@@ -29,11 +29,14 @@ class Fringe():
 	    #print(g)
 	    if(i[2]>x[2]):
 	        self.List.insert(k,x)
-	        return
+	        if k==0:
+		    return k
+		else:
+		    return k-1
 	    k+=1
 	#Append new state to end if it costs greater than all other costs
 	self.List.append(x)
-	return
+	return k-1
 
     def Remove(self,x, y):
 	print("Removing:[%d,%d]",x,y)
