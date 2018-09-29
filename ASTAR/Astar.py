@@ -55,7 +55,8 @@ def Compress():
 	    ct = 0
 	    if(i[3]!=PathSeq[k][0] or i[4]!=PathSeq[k][1]):
 	        while(i[3]!=PathSeq[k][0] or i[4]!=PathSeq[k][1]): #and i[2] > PathSeq[k][2]):
-		    print("POP NODES not Ancestors of GOAL PATH",PathSeq[k])
+		    print("POP NODES not Ancestors of GOAL PATH",PathSeq[k])   
+   		    ENV[PathSeq[k][0]][PathSeq[k][1]] = 4
 		    PathSeq.pop(k)
 		    k-=1
 		    if k<0:
@@ -517,13 +518,15 @@ def main(S):
 	    #continue
 
 	if S[0]==Goal[0] and S[1]==Goal[1]:
-	    PrintE()
+	    #PrintE()
 	    print ("FOUND GOAL!")
-	    print ("Uncompressed::",PathSeq[:])
+	    #print ("Uncompressed::",PathSeq[:])
 	    print("")
 	    ############################################## This is equivalent to parent parent(s) function...
 	    Compress()
-	    print ("Compressed::",PathSeq[:])
+	    print("TRACE PATH (2's ONLY)")
+	    #PrintE()
+	    #print ("Compressed::",PathSeq[:])
 	    return PathSeq[:]
 	
 	ClosedList.append(S)
@@ -536,7 +539,9 @@ def main(S):
         u = []
 	O = []
 	#U = State()
-	print("CLOSED LISTS",ClosedList)	
+
+	#print("CLOSED LISTS",ClosedList)	
+	
 	#Check if already visited and not in fringe
 	#t = 0
 	for u in L:
@@ -567,6 +572,7 @@ def main(S):
 	        #return
 	#PrintE()
     print ("NO GOAL FOUND!!!!")
+    return "ERROR"
 
 if __name__=="__main__":
     main(sys.argv[:])
