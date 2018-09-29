@@ -227,7 +227,7 @@ def NonCollisions(S):
     TempY = StartY-1 
     #print("Temp X:",TempX," TempY: ",TempY)
     if(ClearToGo(TempY,TempX) and (P[0]!=TempY or P[1]!=TempX)):
-	GoTo.append([TempY,TempX,(S[5]+1)+Heuristic([TempY,TempX]),StartY,StartX,S[5]+1])
+	GoTo.append([TempY,TempX,(S[5]+0.01)+Heuristic([TempY,TempX]),StartY,StartX,S[5]+1])
 
     #DOWN 
     TempX = StartX
@@ -235,49 +235,49 @@ def NonCollisions(S):
 
     #print("Temp X:",TempX," TempY: ",TempY)
     if(ClearToGo(TempY,TempX)and (P[0]!=TempY or P[1]!=TempX)):
-        GoTo.append([TempY,TempX,S[5]+1+Heuristic([TempY,TempX]),StartY,StartX,S[5]+1])
+        GoTo.append([TempY,TempX,S[5]+0.01+Heuristic([TempY,TempX]),StartY,StartX,S[5]+1])
 
     #LEFT 
     TempX = StartX-1
     TempY = StartY
     #print("Temp X:",TempX," TempY: ",TempY)    
     if(ClearToGo(TempY,TempX)and (P[0]!=TempY or P[1]!=TempX)):
-        GoTo.append([TempY,TempX,S[5]+1+Heuristic([TempY,TempX]),StartY,StartX,S[5]+1])
+        GoTo.append([TempY,TempX,S[5]+0.01+Heuristic([TempY,TempX]),StartY,StartX,S[5]+1])
 
     #RIGHT 
     TempX = StartX+1
     TempY = StartY
     #print("Temp X:",TempX," TempY: ",TempY)
     if(ClearToGo(TempY,TempX)and (P[0]!=TempY or P[1]!=TempX)):
-        GoTo.append([TempY,TempX,S[5]+1+Heuristic([TempY,TempX]),StartY,StartX,S[5]+1])
+        GoTo.append([TempY,TempX,S[5]+0.01+Heuristic([TempY,TempX]),StartY,StartX,S[5]+1])
 
     #UpRIGHT
     TempX = StartX+1
     TempY = StartY-1
     #print("Temp X:",TempX," TempY: ",TempY)    
     if(ClearToGo(TempY,TempX)and (P[0]!=TempY or P[1]!=TempX)):
-        GoTo.append([TempY,TempX,S[5]+1+Heuristic([TempY,TempX]),StartY,StartX,S[5]+1])
+        GoTo.append([TempY,TempX,S[5]+0.01+Heuristic([TempY,TempX]),StartY,StartX,S[5]+1])
 
     #UPLEFT
     TempX = StartX-1
     TempY = StartY-1
     #print("Temp X:",TempX," TempY: ",TempY)
     if(ClearToGo(TempY,TempX)and (P[0]!=TempY or P[1]!=TempX)):
-        GoTo.append([TempY,TempX,S[5]+1+Heuristic([TempY,TempX]),StartY,StartX,S[5]+1])
+        GoTo.append([TempY,TempX,S[5]+0.01+Heuristic([TempY,TempX]),StartY,StartX,S[5]+1])
 
     #DownLeft 
     TempX = StartX-1
     TempY = StartY+1
     #print("Temp X:",TempX," TempY: ",TempY)
     if(ClearToGo(TempY,TempX)and (P[0]!=TempY or P[1]!=TempX)):
-        GoTo.append([TempY,TempX,S[5]+1+Heuristic([TempY,TempX]),StartY,StartX,S[5]+1])
+        GoTo.append([TempY,TempX,S[5]+0.01+Heuristic([TempY,TempX]),StartY,StartX,S[5]+1])
 
     #DownRight
     TempX = StartX+1
     TempY = StartY+1
     #print("Temp X:",TempX," TempY: ",TempY)
     if(ClearToGo(TempY,TempX) and (P[0]!=TempY or P[1]!=TempX)):
-        GoTo.append([TempY,TempX,S[5]+1+Heuristic([TempY,TempX]),StartY,StartX,S[5]+1])
+        GoTo.append([TempY,TempX,S[5]+0.01+Heuristic([TempY,TempX]),StartY,StartX,S[5]+1])
 
     if(len(GoTo)==0):
 	print("")
@@ -289,22 +289,28 @@ def NonCollisions(S):
     return GoTo
 def MaxLen():
     global ENV
+    global MidX
+    global MidY
+
     i = None
     j = ''
     Ccount = 0
     y = -sys.maxint
+    z = -sys.maxint
     for i in ENV:
 	Ccount = 0
 	print("If:",len(i)," >",y)
 	if(len(i)>y):
+	    MidX = (len(i)/2.0) 
 	    y = len(i)
 	for j in i:
 	    Ccount+=1
 	    #print("If:",len(j)," >",y)
 	    #if(len(j)>y):
 	        #y = len(j)
-	if(Ccount>y):
-	    y=Ccount
+	if(Ccount>z):
+	    MidY = (Ccount/2.0)
+	    z=Ccount
     return y
 def main():
     global Goal
@@ -353,9 +359,9 @@ def main():
     L = MaxLen()
     print("MAX LENGTH:",L)
     #Midpoint used to convert neg to pos coordinate numbers for env
-    MidX = math.floor(L/2)
+    #MidX = math.floor(L/2)
     #MidY = math.ceil(len(x[len(x)-1])/2)
-    MidY = math.floor(L/2)
+    #MidY = math.floor(L/2)
 ###############################################################################################################################################################################################
 
     print("Midpoints: [%d,%d]"%(MidX,MidY))
