@@ -5,10 +5,16 @@ from argparse import ArgumentParser
 import os
 from subprocess import Popen, PIPE
 import sys
-sys.path.append("../ENVGEN")
+
+sys.path.append('../ENVGEN')
+sys.path.append('ENVGEN')
+print("CURR DIR:",os.getcwd())
 import StartEGen
-#sys.path.append("../TBOTCLIENT")
-#import RunClient
+
+sys.path.append("../TBOTCLIENT")
+sys.path.append("TBOTCLIENT")
+import RunClient
+
 from numpy import loadtxt
 
 #Visited/Closed List
@@ -373,7 +379,7 @@ def MaxLen():
 def RequestClient():
     #Start Process to request client
     PrevDir = os.getcwd()
-    os.chdir("../TBOTCLIENT")
+    os.chdir("TBOTCLIENT")
     p = Popen(['python ./RunClient.py',''],stdin=PIPE,stdout=PIPE,stderr=PIPE,shell=True)
     output,err = p.communicate("Input data passed to subprocess")
     rc = p.returncode
@@ -385,64 +391,46 @@ def CommandClient(position):
     PrevDir = os.getcwd()
     print("ASTAR: Command Client to:",' '.join(position))
     #Start Process to command client
-    os.chdir("../TBOTCLIENT")
+    os.chdir("TBOTCLIENT")
     p = Popen(['python ./RunClient.py '+' '.join(position),''],stdin=PIPE,stdout=PIPE,stderr=PIPE,shell=True)
     output, err = p.communicate("Input data passed to subprocess")         
     rc = p.returncode
     #p.wait()
     print ("Returned to ASTAR:",rc,output)
     os.chdir(PrevDir)
-    
-def main():
+
+#S = [MAP,x,y,x,y]    
+def main(S):
     global Goal
     global ENV
     global ClosedList
     global PathSeq
     global F
 
-    if(len(sys.argv[:])<6):
+    if(len(sys.argv[:])<6) and S==sys.argv[:]:
         print("MUST ENTER START [x,y] ARGuMENT AND GOAL [x,y] ARGUMENT + PATH_TO_MAZE_FILE")
 	sys.exit(-1)
-    
+    f = None
+    if S!=sys.argv[:]:
+	print ("Astar Called from another program")
+	#f = open("".join(S),'r')
+	ENV = S[0]
+	#RC = RequestClient()
+	#sys.exit(-2) 
     #CC = CommandClient(["1.25","0.1","0.0"]) 
-    #Requests Position Forever... Until Exit
-    RC = RequestClient()
-    #os.getcwd()
-    #return
-
-    #parser = ArgumentParser()
-    #parser.add_argument("-s","--Startr")
-    #parser.add_argument("-t","--Startc")
-    #parser.add_argument("-u","--Goalr")
-    #parser.add_argument("-v","--Goalc")
-
-    #args = parser.parse_args()
-
-    #if( args.Startr is None or args.Startc is None or args.Goalr is None or args.Goalc is None):
-	#print("MUST ENTER START [row,col] ARGuMENT AND GOAL [row,col] ARGUMENT!")
-	#sys.exit(-1)
-
-    #print("hello World")    
-    #F = Fringe()
-    #F.Insert(5,2,20)
-    #F.Insert(6,7,-2)
-    #F.Insert(21,23,22)
-    #F.Print()    
-    #P = F.Pop()
-    #F.Print()
-    #F.Remove(21,23)
-    #F.Print()
-    #      TEST
+    #Requests Position Forever... Until Given
+    #RC = RequestClient()
     #ASTAR
-
-    f = open(sys.argv[5],'r')
-    x = f.read().splitlines()
-    f.close()
-    print ("Array")
-    #print (x)
-    PrintENV(x)
-
+    #print ("Array")
+    else:
+        f = open(sys.argv[5],'r')
+        x = f.read().splitlines()
+        f.close()
+        #print ("Array")
+        #print (x)
+        PrintENV(x)
 ###############################################################ASSUME GRID IS NXN#### AND PREFERRABLY EVEN###################################################################  
+    sys.argv = S
     L = MaxLen()
     print("MAX LENGTH:",L)
     #Midpoint used to convert neg to pos coordinate numbers for env
@@ -581,4 +569,4 @@ def main():
     print ("NO GOAL FOUND!!!!")
 
 if __name__=="__main__":
-    main()
+    main(sys.argv[:])
