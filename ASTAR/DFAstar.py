@@ -39,6 +39,7 @@ PathSeq = []
 #Pop each redundant node
 def Compress():
     global PathSeq
+    global ENV
     #P = []
     #P.insert(0,PathSeq[-1])
     i = []
@@ -51,7 +52,9 @@ def Compress():
 	    if(i[3]!=PathSeq[k][0] or i[4]!=PathSeq[k][1]):
 	        while(i[3]!=PathSeq[k][0] or i[4]!=PathSeq[k][1]): #and i[2] > PathSeq[k][2]):
 		    print("POP NODES not Ancestors of GOAL PATH",PathSeq[k])
+		    ENV[PathSeq[k][0]][PathSeq[k][1]] = 4
 		    PathSeq.pop(k)
+		    	
 		    k-=1
 		    if k<0:
 		        break
@@ -122,11 +125,14 @@ def Cost(s1,s2): #... IS 1 for traditional A*, but is dependant on the diagonal 
 def grid(x,y):
     if(x<0 or x>len(ENV) or y<0 or y>len(ENV)):
 	print ("LINE OF SIGHT::Out of Bounds")
-	return false
+	#sys.exit(-2)
+	return False
     return ENV[x][y]==0
 
 #[y,x,f,py,px,dfp]
 def LineOfSight(s1,s2):
+    if(s1 is None or s2 is None):
+	return False
     x_0 = s1[1]
     y_0 = s1[0]
     x_1 = s2[1]
@@ -153,29 +159,45 @@ def LineOfSight(s1,s2):
 	    F=F+d_y
 	    if F>=d_x:
 		if grid(x_0+((s_x-1)/2),y_0+((s_y-1)/2)):
-		    return false
+		    return False
 		y_0=y_0+s_y
 		F = F - d_x
 
 	    if F!=0 and grid(x_0 + ((s_x-1)/2),y_0+((s_y-1)/2)):
-	        return false
+	        return False
 
 	    if d_y==0 and grid(x_0 + ((s_x-1)/2),y_0) and grid(x_0 + ((s_x-1)/2),y_0-1):
-		return false
+		return False
+	    x_0=x_0+s_x
     else:
 	while y_0!=y_1:
 	    F=F+d_x
 	    if F>=d_y:
 		if grid(x_0+((s_x-1)/2),y_0+((s_y-1)/2)):
-		    return false
+		    return False
 		x_0=x_0 + s_x
 		F = F - d_y
 	    if F!=0 and grid(x_0 + ((s_x-1)/2),y_0+((s_y-1)/2)):
-		return false
+		return False
 	    if d_x==0 and grid(x_0,y_0 + ((s_y-1)/2)) and grid(x_0-1,y_0+((s_y-1)/2)):
-		return false
-    return true
-
+		return False
+	    y_0 = y_0 + s_y
+    return True
+def Parent(S):
+    i = None
+    p = []
+    p.append(S[3])
+    p.append(S[4])
+    #k = 0
+    for i in PathSeq:
+	print("IF:",p,"==",i)
+	if(p[0] == i[0] and p[1] ==i[1]):
+	    print("Found Parent of:",S)
+	    ##sys.exit(-1)
+	    return i
+    print("FOUND NO PARENT")
+    return None
+	#k+=1	
 #Chooses optimal path
 #s1, s2 are State Classes
 def UpdateVertex(s1,s2):
@@ -199,23 +221,47 @@ def UpdateVertex(s1,s2):
     print ("VALUE:",First[5]+C, "<", s2[5], "??")
     #############################################################################
 
-    if(First[5] + C < s2[5]):
+    #print("LINE OF SIGHT:",LineOfSight(s1,s2))
+    P = Parent(s1)	
 
-	#Found a better path, new parent	
-	s2[5] = round(First[5] + C,2)
-	s2[3] = First[0]
-	s2[4] = First[1]
-        ################################
+    C2 = C+Cost(P,Second)
 
-	#If the fringe already contains s2, remove it, BECAUSE FOUND A SHORTER ADJ PATH	
-	if(F.Exists(s2)):
-	    F.Remove(s2[0],s2[1])
+    if LineOfSight(P,s2):
+	#Path 2
+	if P[5] + C2 < Second[5]:
+	    #Found a better path for LOS, new parent
+	    Second[5] = round(P[5] + C2,2)
+	    Second[3] = First[3]
+	    Second[4] = First[4]
+
+	    if(F.Exists(Second)):
+		F.Remove(Second[0],Second[1])
+
+	    Second[2] = Heuristic(Second)+Second[5]
+
+            print("s2 F VALUE CASE 1:",Second[2])
+
+	    F.Insert(Second)
+    else:
+	#Path 1
+
+        if(First[5] + C < s2[5]):
+
+	    #Found a better path, new parent	
+	    s2[5] = round(First[5] + C,2)
+	    s2[3] = First[0]
+	    s2[4] = First[1]
+            ################################
+
+	    #If the fringe already contains s2, remove it, BECAUSE FOUND A SHORTER ADJ PATH	
+	    if(F.Exists(s2)):
+	        F.Remove(s2[0],s2[1])
         
-	s2[2] = Heuristic(s2) + s2[5]
+	    s2[2] = Heuristic(s2) + s2[5]
 	
-        print("s2 F VALUE:",s2[2])
+            print("s2 F VALUE CASE 2:",s2[2])
 
-        F.Insert(s2)
+            F.Insert(s2)
     
     #if(len(F.List)>50000):
             #sys.exit(0)
@@ -235,13 +281,13 @@ def Heuristic(s1):
     print()
 
     #Manhattah Heuristic
-    #return round(abs(End[0]-Start[0]) + abs(End[1]-Start[1]),2)
+    #return abs(End[0]-Start[0]) + abs(End[1]-Start[1])
     
     #Euclidean Heuristic
-    return round((math.sqrt((End[0]-Start[0])*(End[0]-Start[0]) + (End[1]-Start[1])*(End[1]-Start[1]) )),2)
+    #return int(math.ceil(math.sqrt((End[0]-Start[0])*(End[0]-Start[0]) + (End[1]-Start[1])*(End[1]-Start[1]) )))
     
     #Trace A* Heuristic
-    #return round((math.ceil(math.sqrt(2)*min(abs(End[0]-Start[0]),abs(End[1]-Start[1])) + max(abs(End[0]-Start[0]),abs(End[1]-Start[1])) - min(abs(End[0]-Start[0]),abs(End[1]-Start[1])))/100),2)
+    return round((math.ceil(math.sqrt(2)*min(abs(End[0]-Start[0]),abs(End[1]-Start[1])) + max(abs(End[0]-Start[0]),abs(End[1]-Start[1])) - min(abs(End[0]-Start[0]),abs(End[1]-Start[1])))/100),2)
     
 
 #Checks if ENV representation is correct
@@ -289,7 +335,6 @@ def NonCollisions(S):
     #DOWN 
     TempX = StartX
     TempY = StartY+1
-
     #print("Temp X:",TempX," TempY: ",TempY)
     if(ClearToGo(TempY,TempX)and (P[0]!=TempY or P[1]!=TempX)):
         GoTo.append([TempY,TempX,S[5]+0.01+Heuristic([TempY,TempX]),StartY,StartX,S[5]+0.01])
@@ -499,13 +544,14 @@ def main():
 	    #continue
 
 	if S[0]==Goal[0] and S[1]==Goal[1]:
-	    PrintE()
+	    #PrintE()
 	    print ("FOUND GOAL!")
 	    print ("Uncompressed::",PathSeq[:])
-	    print("")
+	    #print("")
 	    ############################################## This is equivalent to parent parent(s) function...
 	    Compress()
 	    print ("Compressed::",PathSeq[:])
+	    PrintE()
 	    return PathSeq[:]
 	
 	ClosedList.append(S)
