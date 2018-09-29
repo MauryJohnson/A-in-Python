@@ -287,7 +287,7 @@ def Heuristic(s1):
     #return int(math.ceil(math.sqrt((End[0]-Start[0])*(End[0]-Start[0]) + (End[1]-Start[1])*(End[1]-Start[1]) )))
     
     #Trace A* Heuristic
-    return round((math.ceil(math.sqrt(2)*min(abs(End[0]-Start[0]),abs(End[1]-Start[1])) + max(abs(End[0]-Start[0]),abs(End[1]-Start[1])) - min(abs(End[0]-Start[0]),abs(End[1]-Start[1])))/100),2)
+    return ((math.ceil(math.sqrt(2)*min(abs(End[0]-Start[0]),abs(End[1]-Start[1])) + max(abs(End[0]-Start[0]),abs(End[1]-Start[1])) - min(abs(End[0]-Start[0]),abs(End[1]-Start[1])))/100))
     
 
 #Checks if ENV representation is correct

@@ -1,15 +1,14 @@
-#import Fringe
-#import ClosedList
-#from ClosedList import ClosedList
 from __future__ import print_function
 import math
 from Fringe import Fringe
-#from State import State
-
 from argparse import ArgumentParser
-
+import os
+from subprocess import Popen, PIPE
 import sys
-
+sys.path.append("../ENVGEN")
+import StartEGen
+#sys.path.append("../TBOTCLIENT")
+#import RunClient
 from numpy import loadtxt
 
 #Visited/Closed List
@@ -235,13 +234,13 @@ def Heuristic(s1):
     print()
 
     #Manhattah Heuristic
-    #return round(abs(End[0]-Start[0]) + abs(End[1]-Start[1]),2)
+    #return round(abs(End[0]-Start[0]) + abs(End[1]-Start[1])/100,2)
     
     #Euclidean Heuristic
-    return round((math.sqrt((End[0]-Start[0])*(End[0]-Start[0]) + (End[1]-Start[1])*(End[1]-Start[1]) )),2)
+    return (((math.sqrt(float(End[0]-Start[0])*float(End[0]-Start[0]) + float(End[1]-Start[1])*float(End[1]-Start[1]) ))/100.00))
     
     #Trace A* Heuristic
-    #return round((math.ceil(math.sqrt(2)*min(abs(End[0]-Start[0]),abs(End[1]-Start[1])) + max(abs(End[0]-Start[0]),abs(End[1]-Start[1])) - min(abs(End[0]-Start[0]),abs(End[1]-Start[1])))/100),2)
+    #return round((math.ceil(math.sqrt(2)*min(abs(End[0]-Start[0]),abs(End[1]-Start[1])) + max(abs(End[0]-Start[0]),abs(End[1]-Start[1])) - min(abs(End[0]-Start[0]),abs(End[1]-Start[1])))/100.00),2)
     
 
 #Checks if ENV representation is correct
@@ -369,6 +368,31 @@ def MaxLen():
 	    MidY = (Ccount/2.0)
 	    z=Ccount
     return y
+
+#Requests the position of the bot
+def RequestClient():
+    #Start Process to request client
+    PrevDir = os.getcwd()
+    os.chdir("../TBOTCLIENT")
+    p = Popen(['python ./RunClient.py',''],stdin=PIPE,stdout=PIPE,stderr=PIPE,shell=True)
+    output,err = p.communicate("Input data passed to subprocess")
+    rc = p.returncode
+    #p.wait()
+    print ("Returned to ASTAR:",rc,output )
+    os.chdir(PrevDir)
+#Move to a position which would be comprised of doubles rounded to 100th place after decimal
+def CommandClient(position):
+    PrevDir = os.getcwd()
+    print("ASTAR: Command Client to:",' '.join(position))
+    #Start Process to command client
+    os.chdir("../TBOTCLIENT")
+    p = Popen(['python ./RunClient.py '+' '.join(position),''],stdin=PIPE,stdout=PIPE,stderr=PIPE,shell=True)
+    output, err = p.communicate("Input data passed to subprocess")         
+    rc = p.returncode
+    #p.wait()
+    print ("Returned to ASTAR:",rc,output)
+    os.chdir(PrevDir)
+    
 def main():
     global Goal
     global ENV
@@ -376,9 +400,15 @@ def main():
     global PathSeq
     global F
 
-    if(len(sys.argv[:])<5):
-        print("MUST ENTER START [row,col] ARGuMENT AND GOAL [row,col] ARGUMENT!")
+    if(len(sys.argv[:])<6):
+        print("MUST ENTER START [x,y] ARGuMENT AND GOAL [x,y] ARGUMENT + PATH_TO_MAZE_FILE")
 	sys.exit(-1)
+    
+    #CC = CommandClient(["1.25","0.1","0.0"]) 
+    #Requests Position Forever... Until Exit
+    RC = RequestClient()
+    #os.getcwd()
+    #return
 
     #parser = ArgumentParser()
     #parser.add_argument("-s","--Startr")
@@ -405,7 +435,7 @@ def main():
     #      TEST
     #ASTAR
 
-    f = open('maze','r')
+    f = open(sys.argv[5],'r')
     x = f.read().splitlines()
     f.close()
     print ("Array")

@@ -7,11 +7,14 @@ from gazebo_msgs.srv import GetModelState
 from std_msgs.msg import String
 
 def callback(data):
-    print"I heard:[",data.x,",",data.y,"]","Goal reached? == ",data.goal_reached
+    print data.x,",",data.y,",",data.goal_reached
+    #rospy.exit(0)
+    rospy.signal_shutdown(str(data.x) + " " + str(data.y))
+    #sys.exit(0)
     #rospy.loginfo("I heard",str(data))
     
 def Coordinates():
-    print("Initialize Coordinates")
+    #print("Initialize Coordinates")
     rospy.init_node('Coordinates')
     rospy.Subscriber("turtlebot_state",TurtleBotState,callback)
     rospy.spin()

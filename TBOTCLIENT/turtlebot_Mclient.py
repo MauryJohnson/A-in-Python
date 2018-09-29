@@ -37,7 +37,7 @@ def Coordinates(data):
 	return
     except rospy.ServiceException, e:
         print "Service call failed/BOT POSITION FAILURE??: %s"%e
-	sys.exit(1)
+	sys.exit(-2)
     rospy.spin()
     #print("WAITING FOR: turtlebot_state")
     #rospy.wait_for_service('turtlebot_state')
@@ -53,12 +53,16 @@ def usage():
 
 if __name__ == "__main__":
     if len(sys.argv) == 4:
-        x = float(sys.argv[1])
-        y = float(sys.argv[2])
-	z = float(sys.argv[3])
+        try:
+	    x = float(sys.argv[1])
+            y = float(sys.argv[2])
+	    z = float(sys.argv[3])
+	except:
+	    print("Float Conversion Failure")
+	    sys.exit(-1)
     else:
         print usage()
-        sys.exit(1)
+        sys.exit(-1)
     print "Requesting COORDINATES [%s,%s,%s]"%(x, y, z)
     #print (Coordinates())
     Coordinates([x,y,z])

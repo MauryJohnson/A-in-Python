@@ -3,7 +3,6 @@ from MapMake import mapMake
 
 import sys
 
-
 def main():
     if(len(sys.argv[:])<2):
         print("MUST ENTER MAP PATH IN ARG 1")

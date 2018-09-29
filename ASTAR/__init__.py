@@ -1,6 +1,1 @@
-~/
-    Desktop/
-        RAss1/
-	    Fringe.py
-	    State.py
-	    EnvGen.py
+ASTAR/../ENVGEN/StartEGen.py
