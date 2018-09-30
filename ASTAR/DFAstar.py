@@ -619,8 +619,13 @@ def main(S_IN):
 		    #PrintE()
 		
 		#if(len(O)<3 or len(S)<3):
+<<<<<<< HEAD
 		    ##print("ERROR, LENGTH NOT CORRECT")
 		    ##print("S:",S,"O:",O)
+=======
+		    #print("ERROR, LENGTH NOT CORRECT")
+		    #print("S:",S,"O:",O)
+>>>>>>> d3b8c44071bda09094435689829f4ceba38441e5
 		    #sys.exit(-1)
 				    	    
 		(UpdateVertex(S,O))    
