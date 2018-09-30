@@ -438,6 +438,8 @@ def RequestClient():
     return output
 #Move to a position which would be comprised of doubles rounded to 100th place after decimal
 def CommandClient(position):
+    if(len(position)<3):
+	position.append(0)
     PrevDir = os.getcwd()
     print("ASTAR: Command Client to:",' '.join(position))
     #Start Process to command client
@@ -515,7 +517,7 @@ def main(S_IN):
 	print("Goal is Out of bounds")
 	return
     
-    if ENV[Goal[0]][Goal[1]] ==0:
+    if ENV[Goal[0]][Goal[1]] == 0:
         print ("Goal is inside of an obstacle")
         return
 
@@ -543,7 +545,7 @@ def main(S_IN):
 
     S = Ss
 
-    if ENV[S[0]][S[1]] ==0:
+    if ENV[S[0]][S[1]] == 0:
         print ("Start is inside of an obstacle")
         return
 
@@ -586,6 +588,8 @@ def main(S_IN):
 	    print("TRACE PATH (2's ONLY)")
 	    #PrintE()
 	    print ("Compressed::",PathSeq[:])
+	    for I in PathSeq:
+	 	CommandClient(I)
 	    #PrintE()
 	    return PathSeq[:]
 	
@@ -619,13 +623,13 @@ def main(S_IN):
 		    #PrintE()
 		
 		#if(len(O)<3 or len(S)<3):
-<<<<<<< HEAD
+#<<<<<<< HEAD
 		    ##print("ERROR, LENGTH NOT CORRECT")
 		    ##print("S:",S,"O:",O)
-=======
+#=======
 		    #print("ERROR, LENGTH NOT CORRECT")
 		    #print("S:",S,"O:",O)
->>>>>>> d3b8c44071bda09094435689829f4ceba38441e5
+#>>>>>>> d3b8c44071bda09094435689829f4ceba38441e5
 		    #sys.exit(-1)
 				    	    
 		(UpdateVertex(S,O))    
@@ -635,6 +639,6 @@ def main(S_IN):
 	        #return
 	#PrintE()
     print ("NO GOAL FOUND!!!!")
-
+    return None
 if __name__=="__main__":
     main(sys.argv[:])

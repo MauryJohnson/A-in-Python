@@ -220,9 +220,9 @@ def UpdateVertex(s1,s2):
 	if(F.Exists(s2)):
 	    F.Remove(s2[0],s2[1])
         
-	s2[2] = Heuristic(s2) + s2[5]
+	s2[2] = round(Heuristic(s2) + s2[5],2)
 	
-        #print("s2 F VALUE:",s2[2])
+        print("s2 F VALUE:",s2[2])
 
         F.Insert(s2)
     
@@ -394,6 +394,8 @@ def RequestClient():
 #Move to a position which would be comprised of doubles rounded to 100th place after decimal
 def CommandClient(position):
     PrevDir = os.getcwd()
+    if len(position<3):
+	position.append(0)
     #print("ASTAR: Command Client to:",' '.join(position))
     #Start Process to command client
     os.chdir("TBOTCLIENT")
@@ -495,7 +497,7 @@ def main(S_IN):
 
     S = Ss
 
-    if ENV[S[0]][S[1]] ==0:
+    if ENV[S[0]][S[1]] == 0:
         print ("Start is inside of an obstacle")
         return
 
@@ -538,6 +540,8 @@ def main(S_IN):
 	    #print("TRACE PATH (2's ONLY)")
 	    #PrintE()
 	    print ("Compressed::",PathSeq[:])
+	    for I in PathSeq:
+	 	CommandClient(I)
 	    return PathSeq[:]
 	
 	ClosedList.append(S)
@@ -583,7 +587,7 @@ def main(S_IN):
 	        #return
 	#PrintE()
     print ("NO GOAL FOUND!!!!")
-    return "ERROR"
+    return None
 
 if __name__=="__main__":
     main(sys.argv[:])
