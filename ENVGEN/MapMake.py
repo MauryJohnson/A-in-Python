@@ -91,7 +91,7 @@ def mapMake(mapList):
         index += 1
         while(not (mapList[index][0] == 'NEXT LINE' or mapList[index][0] == '-BLOCKS-')):
             print mapList[index], mapList[index][0], mapList[index][0] == 'NEXT LINE'
-            temp.append((int(float(mapList[index][0]) * 100) + size/2, int(float(mapList[index][1]) * 100) + size/2))
+            temp.append((int(float(mapList[index][0]) * 100) + size/2, -int(float(mapList[index][1]) * 100) + size/2))
             index += 1
         obstacles.append(temp)
         temp = []
@@ -125,9 +125,9 @@ def mapMake(mapList):
         fillobstacle(mapfull, obstacle, size)
     
     f = open("Maze", 'w')
-    for line in mapfull:
-        for char in line:
-            f.write(str(char) + " ")
+    for y in range(0, size):
+        for x in range(0, size):
+            f.write(str(mapfull[x][y]) + " ")
         f.write('\n')
 
     return mapfull
