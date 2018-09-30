@@ -566,10 +566,10 @@ def main(S_IN):
    	 	    ENV[u[0]][u[1]] = 3
 		    #PrintE()
 		
-		if(len(O)<3 or len(S)<3):
-		    print("ERROR, LENGTH NOT CORRECT")
+		#if(len(O)<3 or len(S)<3):
+		    #print("ERROR, LENGTH NOT CORRECT")
 		    #print("S:",S,"O:",O)
-		    sys.exit(-1)
+		    #sys.exit(-1)
 				    	    
 		(UpdateVertex(S,O))    
 	    ##print("FRINGE:",F.List)	     
