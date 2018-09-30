@@ -39,7 +39,7 @@ class Fringe():
 	return k-1
 
     def Remove(self,x, y):
-	print("Removing:[%d,%d]",x,y)
+	#print("Removing:[%d,%d]",x,y)
 	#self.List.delete([x,y])
 	#g = 0
     	#self.List.pop(self.List.index([x,y,g]))
@@ -47,19 +47,19 @@ class Fringe():
 	for i in self.List:
 	    if( i[0] == x and i[1] ==y ):
 	 	self.List.pop(self.List.index(i))#[x,y,i[2]]))       
-		print("Removed:[%d,%d]",x,y,i[2],)
+		#print("Removed:[%d,%d]",x,y,i[2],)
 		return
     
     def Pop(self):
 	#Pop first node from fringe
 	P = self.List.pop(0)
-	print("Popping")
-	print(P)
+	#print("Popping")
+	#print(P)
 	return P
     
     def Print(self):
-	print("Printing Fringe")
-	print(self.List[:])
+	#print("Printing Fringe")
+	#print(self.List[:])
 	return
     
     def ListInsert(self, L2, I):
@@ -67,11 +67,11 @@ class Fringe():
 	self.List.insert(I,L2)
 	return
     def Exists(self,S):
-	print("Does :",S," Exist?")
+	#print("Does :",S," Exist?")
 	for i in self.List:
 	    #print("I:",i)
 	    if(i[0]==S[0] and i[1]==S[1]):
-		print("YES")
+		#print("YES")
 		return True
-	print("NO")
+	#print("NO")
 	return False

@@ -8,7 +8,7 @@ import sys
 
 sys.path.append('../ENVGEN')
 sys.path.append('ENVGEN')
-#print("CURR DIR:",os.getcwd())
+print("CURR DIR:",os.getcwd())
 import StartEGen
 
 sys.path.append("../TBOTCLIENT")
@@ -55,7 +55,7 @@ def Compress():
 	    ct = 0
 	    if(i[3]!=PathSeq[k][0] or i[4]!=PathSeq[k][1]):
 	        while(i[3]!=PathSeq[k][0] or i[4]!=PathSeq[k][1]): #and i[2] > PathSeq[k][2]):
-		    #print("POP NODES not Ancestors of GOAL PATH",PathSeq[k])   
+		    print("POP NODES not Ancestors of GOAL PATH",PathSeq[k])   
    		    ENV[PathSeq[k][0]][PathSeq[k][1]] = 4
 		    PathSeq.pop(k)
 		    k-=1
@@ -64,13 +64,13 @@ def Compress():
 		    ct+=1
 	        #IF duplicate node
 	        k = sv-ct
-		##print("")
+		print("")
 	    elif(i==PathSeq[k]):
 	        PathSeq.pop(k)
 	    #elif(i[3]==PathSeq[k][0] and i[4]==PathSeq[k][1]):
 		#P.insert(0,PathSeq[k])
-	    ###print("")
-	###print("")
+	    #print("")
+	#print("")
 	i = PathSeq[k]
 	k-=1
 
@@ -86,9 +86,9 @@ def PrintE():
     
     i  = ' '
     #
-    #for i in ENV:
-	#print(i)
-	#print("")
+    for i in ENV:
+	print(i)
+	print("")
 
 def PrintENV(x):
     i = ''
@@ -112,14 +112,14 @@ def PrintENV(x):
 		    Succ.append(int(k))
 	ENV.append(Succ)
 	p1+=1
-	#print ("")
+	print ("")
 
 
 def Cost(s1,s2): #... IS 1 for traditional A*, but is dependant on the diagonal dist for free-direction A*
-    #print ("Cost Func from Coordinates of s1 to Coordinates of s2")
-    #print (s1)
-    #print (s2)
-    #print ("+1")
+    print ("Cost Func from Coordinates of s1 to Coordinates of s2")
+    print (s1)
+    print (s2)
+    print ("+1")
     ################################### STANDARD A* COST
     #return 1.0 
     ################################### STANDARD A* COST
@@ -127,7 +127,7 @@ def Cost(s1,s2): #... IS 1 for traditional A*, but is dependant on the diagonal 
 
 def grid(x,y):
     if(x<0 or x>len(ENV) or y<0 or y>len(ENV)):
-	#print ("LINE OF SIGHT::Out of Bounds")
+	print ("LINE OF SIGHT::Out of Bounds")
 	return false
     return ENV[x][y]==0
 
@@ -190,7 +190,7 @@ def UpdateVertex(s1,s2):
     First = s1
     Second = s2
    
-    #print("FIRST:",First,"SECOND:",Second, "GOAL:",Goal)
+    print("FIRST:",First,"SECOND:",Second, "GOAL:",Goal)
 
     C = 0.0
 
@@ -202,7 +202,7 @@ def UpdateVertex(s1,s2):
     
     #############################################################################	
     #Check if found a shorter adjacent path
-    #print ("VALUE:",First[5]+C, "<", s2[5], "??")
+    print ("VALUE:",First[5]+C, "<", s2[5], "??")
     #############################################################################
 
     if(First[5] + C < s2[5]):
@@ -219,7 +219,7 @@ def UpdateVertex(s1,s2):
         
 	s2[2] = Heuristic(s2) + s2[5]
 	
-        #print("s2 F VALUE:",s2[2])
+        print("s2 F VALUE:",s2[2])
 
         F.Insert(s2)
     
@@ -234,11 +234,11 @@ def Heuristic(s1):
     Start = s1
     End = Goal
     
-    #print()
-    #print()
-    #print("END",End,"START",Start)
-    #print()
-    #print()
+    print()
+    print()
+    print("END",End,"START",Start)
+    print()
+    print()
 
     #Manhattah Heuristic
     #return round(abs(End[0]-Start[0]) + abs(End[1]-Start[1])/100,2)
@@ -252,14 +252,14 @@ def Heuristic(s1):
 
 #Checks if ENV representation is correct
 def ClearToGo(Y,X):
-    #print("Clear To Go check:",Y,X,"Length ENV:",len(ENV),len(ENV[0]))
+    print("Clear To Go check:",Y,X,"Length ENV:",len(ENV),len(ENV[0]))
     if(X<0 or Y<0 or X>len(ENV[0])-1 or Y>len(ENV)-1):
- 	#print ("Out of Bounds, hit a boundary")
+ 	print ("Out of Bounds, hit a boundary")
 	return False
     if(ENV[Y][X]==1):
-	##print("")
-	#print("Clear to Go To:",Y,X)
-	##print("")
+	print("")
+	print("Clear to Go To:",Y,X)
+	print("")
 	return True
     return False
 
@@ -268,15 +268,15 @@ def ClearToGo(Y,X):
 #[ROW,COL,F(N),PRow,PCol,G(N)]
 
 def NonCollisions(S):
-    #print ("Non Collisions for ENV")
+    print ("Non Collisions for ENV")
     #Up(x,y-1),Down(x,y+1),Left)x-1,y), Right(x+1,y), UpRight (x+1,y+1),Up Left(x-1,y+1), DownLeft(x-1,y-1), DownRight (x+1,y-1)
-    #print ("SSSSSSSS:",S)
+    print ("SSSSSSSS:",S)
     P = []
     P.append(S[3])
     P.append(S[4])
     #P[0] = S[3]
     #P[1] = S[4] 
-    #print("START:",S,"Parent:",P)
+    print("START:",S,"Parent:",P)
 
     #Rows
     StartY = S[0]
@@ -288,65 +288,65 @@ def NonCollisions(S):
     #UP 
     TempX = StartX
     TempY = StartY-1 
-    ##print("Temp X:",TempX," TempY: ",TempY)
+    #print("Temp X:",TempX," TempY: ",TempY)
     if(ClearToGo(TempY,TempX) and (P[0]!=TempY or P[1]!=TempX)):
-	GoTo.append([TempY,TempX,(S[5]+Cost([],[]))+Heuristic([TempY,TempX]),StartY,StartX,S[5]+Cost([],[])])
+	GoTo.append([TempY,TempX,(S[5]+0.01)+Heuristic([TempY,TempX]),StartY,StartX,S[5]+0.01])
 
     #DOWN 
     TempX = StartX
     TempY = StartY+1
 
-    ##print("Temp X:",TempX," TempY: ",TempY)
+    #print("Temp X:",TempX," TempY: ",TempY)
     if(ClearToGo(TempY,TempX)and (P[0]!=TempY or P[1]!=TempX)):
-        GoTo.append([TempY,TempX,S[5]+Cost([],[])+Heuristic([TempY,TempX]),StartY,StartX,S[5]+Cost([],[])])
+        GoTo.append([TempY,TempX,S[5]+0.01+Heuristic([TempY,TempX]),StartY,StartX,S[5]+0.01])
 
     #LEFT 
     TempX = StartX-1
     TempY = StartY
-    ##print("Temp X:",TempX," TempY: ",TempY)    
+    #print("Temp X:",TempX," TempY: ",TempY)    
     if(ClearToGo(TempY,TempX)and (P[0]!=TempY or P[1]!=TempX)):
-        GoTo.append([TempY,TempX,S[5]+Cost([],[])+Heuristic([TempY,TempX]),StartY,StartX,S[5]+Cost([],[])])
+        GoTo.append([TempY,TempX,S[5]+0.01+Heuristic([TempY,TempX]),StartY,StartX,S[5]+0.01])
 
     #RIGHT 
     TempX = StartX+1
     TempY = StartY
-    ##print("Temp X:",TempX," TempY: ",TempY)
+    #print("Temp X:",TempX," TempY: ",TempY)
     if(ClearToGo(TempY,TempX)and (P[0]!=TempY or P[1]!=TempX)):
-        GoTo.append([TempY,TempX,S[5]+Cost([],[])+Heuristic([TempY,TempX]),StartY,StartX,S[5]+Cost([],[])])
+        GoTo.append([TempY,TempX,S[5]+0.01+Heuristic([TempY,TempX]),StartY,StartX,S[5]+0.01])
 
     #UpRIGHT
     TempX = StartX+1
     TempY = StartY-1
-    ##print("Temp X:",TempX," TempY: ",TempY)    
+    #print("Temp X:",TempX," TempY: ",TempY)    
     if(ClearToGo(TempY,TempX)and (P[0]!=TempY or P[1]!=TempX)):
-        GoTo.append([TempY,TempX,S[5]+Cost([],[])+Heuristic([TempY,TempX]),StartY,StartX,S[5]+Cost([],[])])
+        GoTo.append([TempY,TempX,S[5]+0.01+Heuristic([TempY,TempX]),StartY,StartX,S[5]+0.01])
 
     #UPLEFT
     TempX = StartX-1
     TempY = StartY-1
-    ##print("Temp X:",TempX," TempY: ",TempY)
+    #print("Temp X:",TempX," TempY: ",TempY)
     if(ClearToGo(TempY,TempX)and (P[0]!=TempY or P[1]!=TempX)):
-        GoTo.append([TempY,TempX,S[5]+Cost([],[])+Heuristic([TempY,TempX]),StartY,StartX,S[5]+Cost([],[])])
+        GoTo.append([TempY,TempX,S[5]+0.01+Heuristic([TempY,TempX]),StartY,StartX,S[5]+0.01])
 
     #DownLeft 
     TempX = StartX-1
     TempY = StartY+1
-    ##print("Temp X:",TempX," TempY: ",TempY)
+    #print("Temp X:",TempX," TempY: ",TempY)
     if(ClearToGo(TempY,TempX)and (P[0]!=TempY or P[1]!=TempX)):
-        GoTo.append([TempY,TempX,S[5]+Cost([],[])+Heuristic([TempY,TempX]),StartY,StartX,S[5]+Cost([],[])])
+        GoTo.append([TempY,TempX,S[5]+0.01+Heuristic([TempY,TempX]),StartY,StartX,S[5]+0.01])
 
     #DownRight
     TempX = StartX+1
     TempY = StartY+1
-    ##print("Temp X:",TempX," TempY: ",TempY)
+    #print("Temp X:",TempX," TempY: ",TempY)
     if(ClearToGo(TempY,TempX) and (P[0]!=TempY or P[1]!=TempX)):
-        GoTo.append([TempY,TempX,S[5]+Cost([],[])+Heuristic([TempY,TempX]),StartY,StartX,S[5]+Cost([],[])])
+        GoTo.append([TempY,TempX,S[5]+0.01+Heuristic([TempY,TempX]),StartY,StartX,S[5]+0.01])
 
-    #if(len(GoTo)==0):
-	#print("")
-	#print("Nowhere to go from:",StartY,StartX)
+    if(len(GoTo)==0):
+	print("")
+	print("Nowhere to go from:",StartY,StartX)
 
-    #print("GOTO CLEARANCE:",GoTo)
+    print("GOTO CLEARANCE:",GoTo)
    
     #Return list of successors to S
     return GoTo
@@ -362,13 +362,13 @@ def MaxLen():
     z = -sys.maxint
     for i in ENV:
 	Ccount = 0
-	#print("If:",len(i)," >",y)
+	print("If:",len(i)," >",y)
 	if(len(i)>y):
 	    MidX = (len(i)/2.0) 
 	    y = len(i)
 	for j in i:
 	    Ccount+=1
-	    ##print("If:",len(j)," >",y)
+	    #print("If:",len(j)," >",y)
 	    #if(len(j)>y):
 	        #y = len(j)
 	if(Ccount>z):
@@ -385,55 +385,55 @@ def RequestClient():
     output,err = p.communicate("Input data passed to subprocess")
     rc = p.returncode
     #p.wait()
-    #print ("Returned to ASTAR:",rc,output )
+    print ("Returned to ASTAR:",rc,output )
     os.chdir(PrevDir)
 #Move to a position which would be comprised of doubles rounded to 100th place after decimal
 def CommandClient(position):
     PrevDir = os.getcwd()
-    #print("ASTAR: Command Client to:",' '.join(position))
+    print("ASTAR: Command Client to:",' '.join(position))
     #Start Process to command client
     os.chdir("TBOTCLIENT")
     p = Popen(['python ./RunClient.py '+' '.join(position),''],stdin=PIPE,stdout=PIPE,stderr=PIPE,shell=True)
     output, err = p.communicate("Input data passed to subprocess")         
     rc = p.returncode
     #p.wait()
-    #print ("Returned to ASTAR:",rc,output)
+    print ("Returned to ASTAR:",rc,output)
     os.chdir(PrevDir)
 
 #S = [MAP,x,y,x,y]    
-def main(S_IN):
+def main(S):
     global Goal
     global ENV
     global ClosedList
     global PathSeq
     global F
 
-    if(len(sys.argv[:])<6) and S_IN==sys.argv[:]:
+    if(len(sys.argv[:])<6) and S==sys.argv[:]:
         print("MUST ENTER START [x,y] ARGuMENT AND GOAL [x,y] ARGUMENT + PATH_TO_MAZE_FILE")
 	sys.exit(-1)
     f = None
-    if S_IN!=sys.argv[:]:
+    if S!=sys.argv[:]:
 	print ("Astar Called from another program")
 	#f = open("".join(S),'r')
-	ENV = S_IN[0]
+	ENV = S[0]
 	#RC = RequestClient()
 	#sys.exit(-2) 
     #CC = CommandClient(["1.25","0.1","0.0"]) 
     #Requests Position Forever... Until Given
     #RC = RequestClient()
     #ASTAR
-    ##print ("Array")
+    #print ("Array")
     else:
         f = open(sys.argv[5],'r')
         x = f.read().splitlines()
         f.close()
-        ##print ("Array")
-        ##print (x)
+        #print ("Array")
+        #print (x)
         PrintENV(x)
 ###############################################################ASSUME GRID IS NXN#### AND PREFERRABLY EVEN###################################################################  
-    sys.argv = S_IN
+    sys.argv = S
     L = MaxLen()
-    #print("MAX LENGTH:",L)
+    print("MAX LENGTH:",L)
     #Midpoint used to convert neg to pos coordinate numbers for env
     #MidX = math.floor(L/2)
     #MidY = math.ceil(len(x[len(x)-1])/2)
@@ -441,7 +441,7 @@ def main(S_IN):
 ###############################################################################################################################################################################################
 
     print("Midpoints: [%d,%d]"%(MidX,MidY))
-    
+
     #First Entry for goal is x, second is y
     GY = round(float(sys.argv[4]),2)
     GY*=100
@@ -462,9 +462,7 @@ def main(S_IN):
 	print("Goal is Out of bounds")
 	return
     
-    if ENV[Goal[0]][Goal[1]] ==0:
-	print ("Goal is inside of an obstacle")
-	return
+    ENV[Goal[0]][Goal[1]] = 1
 
     #First Entry for start is x, second is y
     SY = round(float(sys.argv[2]),2)
@@ -480,7 +478,7 @@ def main(S_IN):
 
     S = [SY,SX,0,SY,SX,0]
 
-    print("sTART:",S);
+    #print("sTART:",S);
 
     if(S[0]<0 or S[0]>len(ENV)-1 or S[1]<0 or S[1]>len(ENV[0])-1):
         print("START is Out of bounds")
@@ -490,19 +488,15 @@ def main(S_IN):
 
     S = Ss
 
-    if ENV[S[0]][S[1]] ==0:
-        print ("Start is inside of an obstacle")
-        return
-
     #Be sure that you insert triplets into the fringe
     
     #Initially Cost is 0 FOR CLASSICAL A*
     F.Insert(Ss)
     
-    ##print("FRINGE:",F.List)
+    #print("FRINGE:",F.List)
    
     if(ENV == []):
-	#print ("No ENV to perform A*")
+	print ("No ENV to perform A*")
 	return 
 
     PathSeq.append(Ss)
@@ -518,21 +512,21 @@ def main(S_IN):
 	PathSeq.append(S)
         ENV[S[0]][S[1]] = 2
 	#else:
-	    ##print("FAILED WITH:",S,"AND PSEQ:",PathSeq)
+	    #print("FAILED WITH:",S,"AND PSEQ:",PathSeq)
 	    #ENV[S[0]][S[1]] = -2
 	    #sys.exit(0)
 	    #continue
 
 	if S[0]==Goal[0] and S[1]==Goal[1]:
 	    #PrintE()
-	    #print ("FOUND GOAL!")
-	    ##print ("Uncompressed::",PathSeq[:])
-	    ##print("")
+	    print ("FOUND GOAL!")
+	    #print ("Uncompressed::",PathSeq[:])
+	    print("")
 	    ############################################## This is equivalent to parent parent(s) function...
 	    Compress()
-	    #print("TRACE PATH (2's ONLY)")
+	    print("TRACE PATH (2's ONLY)")
 	    #PrintE()
-	    print ("Compressed::",PathSeq[:])
+	    #print ("Compressed::",PathSeq[:])
 	    return PathSeq[:]
 	
 	ClosedList.append(S)
@@ -541,22 +535,22 @@ def main(S_IN):
 	
 	L = NonCollisions(S)
 
-	#print("ALL NON COLLISIONS:",L)
+	print("ALL NON COLLISIONS:",L)
         u = []
 	O = []
 	#U = State()
 
-	##print("CLOSED LISTS",ClosedList)	
+	#print("CLOSED LISTS",ClosedList)	
 	
 	#Check if already visited and not in fringe
 	#t = 0
 	for u in L:
 	    if u not in ClosedList:
 		
-		#print(u," is not visited YET")
+		print(u," is not visited YET")
 		
 		if not F.Exists(u):
-		    #print(u," is not in fringe YET")
+		    print(u," is not in fringe YET")
 		    
 		    O = u
 		    O[3] = -1
@@ -568,11 +562,11 @@ def main(S_IN):
 		
 		if(len(O)<3 or len(S)<3):
 		    print("ERROR, LENGTH NOT CORRECT")
-		    #print("S:",S,"O:",O)
+		    print("S:",S,"O:",O)
 		    sys.exit(-1)
 				    	    
 		(UpdateVertex(S,O))    
-	    ##print("FRINGE:",F.List)	     
+	    #print("FRINGE:",F.List)	     
             #t+=1
 	    #if t==1000:
 	        #return

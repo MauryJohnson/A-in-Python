@@ -335,56 +335,56 @@ def NonCollisions(S):
     TempY = StartY-1 
     #print("Temp X:",TempX," TempY: ",TempY)
     if(ClearToGo(TempY,TempX) and (P[0]!=TempY or P[1]!=TempX)):
-	GoTo.append([TempY,TempX,(S[5]+0.01)+Heuristic([TempY,TempX]),StartY,StartX,S[5]+0.01])
+	GoTo.append([TempY,TempX,(S[5]+Cost([],[]))+Heuristic([TempY,TempX]),StartY,StartX,S[5]+Cost([],[])])
 
     #DOWN 
     TempX = StartX
     TempY = StartY+1
     #print("Temp X:",TempX," TempY: ",TempY)
     if(ClearToGo(TempY,TempX)and (P[0]!=TempY or P[1]!=TempX)):
-        GoTo.append([TempY,TempX,S[5]+0.01+Heuristic([TempY,TempX]),StartY,StartX,S[5]+0.01])
+        GoTo.append([TempY,TempX,S[5]+Cost([],[])+Heuristic([TempY,TempX]),StartY,StartX,S[5]+Cost([],[])])
 
     #LEFT 
     TempX = StartX-1
     TempY = StartY
     #print("Temp X:",TempX," TempY: ",TempY)    
     if(ClearToGo(TempY,TempX)and (P[0]!=TempY or P[1]!=TempX)):
-        GoTo.append([TempY,TempX,S[5]+0.01+Heuristic([TempY,TempX]),StartY,StartX,S[5]+0.01])
+        GoTo.append([TempY,TempX,S[5]+Cost([],[])+Heuristic([TempY,TempX]),StartY,StartX,S[5]+Cost([],[])])
 
     #RIGHT 
     TempX = StartX+1
     TempY = StartY
     #print("Temp X:",TempX," TempY: ",TempY)
     if(ClearToGo(TempY,TempX)and (P[0]!=TempY or P[1]!=TempX)):
-        GoTo.append([TempY,TempX,S[5]+0.01+Heuristic([TempY,TempX]),StartY,StartX,S[5]+0.01])
+        GoTo.append([TempY,TempX,S[5]+Cost([],[])+Heuristic([TempY,TempX]),StartY,StartX,S[5]+Cost([],[])])
 
     #UpRIGHT
     TempX = StartX+1
     TempY = StartY-1
     #print("Temp X:",TempX," TempY: ",TempY)    
     if(ClearToGo(TempY,TempX)and (P[0]!=TempY or P[1]!=TempX)):
-        GoTo.append([TempY,TempX,S[5]+0.01+Heuristic([TempY,TempX]),StartY,StartX,S[5]+0.01])
+        GoTo.append([TempY,TempX,S[5]+Cost([],[])+Heuristic([TempY,TempX]),StartY,StartX,S[5]+Cost([],[])])
 
     #UPLEFT
     TempX = StartX-1
     TempY = StartY-1
     #print("Temp X:",TempX," TempY: ",TempY)
     if(ClearToGo(TempY,TempX)and (P[0]!=TempY or P[1]!=TempX)):
-        GoTo.append([TempY,TempX,S[5]+0.01+Heuristic([TempY,TempX]),StartY,StartX,S[5]+0.01])
+        GoTo.append([TempY,TempX,S[5]+Cost([],[])+Heuristic([TempY,TempX]),StartY,StartX,S[5]+Cost([],[])])
 
     #DownLeft 
     TempX = StartX-1
     TempY = StartY+1
     #print("Temp X:",TempX," TempY: ",TempY)
     if(ClearToGo(TempY,TempX)and (P[0]!=TempY or P[1]!=TempX)):
-        GoTo.append([TempY,TempX,S[5]+0.01+Heuristic([TempY,TempX]),StartY,StartX,S[5]+0.01])
+        GoTo.append([TempY,TempX,S[5]+Cost([],[])+Heuristic([TempY,TempX]),StartY,StartX,S[5]+Cost([],[])])
 
     #DownRight
     TempX = StartX+1
     TempY = StartY+1
     #print("Temp X:",TempX," TempY: ",TempY)
     if(ClearToGo(TempY,TempX) and (P[0]!=TempY or P[1]!=TempX)):
-        GoTo.append([TempY,TempX,S[5]+0.01+Heuristic([TempY,TempX]),StartY,StartX,S[5]+0.01])
+        GoTo.append([TempY,TempX,S[5]+Cost([],[])+Heuristic([TempY,TempX]),StartY,StartX,S[5]+Cost([],[])])
 
     if(len(GoTo)==0):
 	print("")
@@ -446,24 +446,24 @@ def CommandClient(position):
     os.chdir(PrevDir)
 
 #S = [MAP,x,y,x,y]  
-def main(S):
+def main(S_IN):
     global Goal
     global ENV
     global ClosedList
     global PathSeq
     global F
 
-    if(len(sys.argv[:])<5 and S==sys.argv[:]):
+    if(len(sys.argv[:])<5 and S_IN==sys.argv[:]):
         print("MUST ENTER START [row,col] ARGuMENT AND GOAL [row,col] ARGUMENT!")
 	sys.exit(-1)
 
     #FDASTAR
 
     f = None
-    if S!=sys.argv[:]:
+    if S_IN!=sys.argv[:]:
 	print ("Astar Called from another program")
 	#f = open("".join(S),'r')
-	ENV = S[0]
+	ENV = S_IN[0]
 	#RC = RequestClient()
 	#sys.exit(-2) 
     #CC = CommandClient(["1.25","0.1","0.0"]) 
@@ -480,7 +480,7 @@ def main(S):
         PrintENV(x)
 
 ###############################################################ASSUME GRID IS NXN#### AND PREFERRABLY EVEN###################################################################  
-    sys.argv = S
+    sys.argv = S_IN
     L = MaxLen()
     print("MAX LENGTH:",L)
     #Midpoint used to convert neg to pos coordinate numbers for env
@@ -511,7 +511,9 @@ def main(S):
 	print("Goal is Out of bounds")
 	return
     
-    ENV[Goal[0]][Goal[1]] = 1
+    if ENV[Goal[0]][Goal[1]] ==0:
+        print ("Goal is inside of an obstacle")
+        return
 
     #First Entry for start is x, second is y
     SY = round(float(sys.argv[2]),2)
@@ -536,6 +538,10 @@ def main(S):
     Ss = [SY,SX,Heuristic(S),SY,SX,0]
 
     S = Ss
+
+    if ENV[S[0]][S[1]] ==0:
+        print ("Start is inside of an obstacle")
+        return
 
     #Be sure that you insert triplets into the fringe
     

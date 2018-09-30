@@ -79,8 +79,8 @@ def main():
 	    countSG+=1
 	    #################
 	Sidx+=1
-	#if(Sidx==3):
-	    #sys.exit(-3)
+	if(Sidx==2):
+	    sys.exit(-3)
 
     print("ALL SOLUTIONS:",SOLN)
 	     #rosparam set goal_position [j[2],j[3]]

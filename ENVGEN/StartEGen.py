@@ -41,7 +41,7 @@ def main(S):
     ###############################################
     M = mapMake(E2)
     ##########MAP
-    #print("MAP:",M,"Size:",len(M))
+    print("MAP:",M,"Size:",len(M))
     SGEN = StartEGen(M,E3)
 
     #print("SGEN MAP:",SGEN.Map," SGEN STARt/GOALS:", SGEN.Start_Goals)
