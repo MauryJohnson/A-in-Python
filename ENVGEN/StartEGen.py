@@ -8,14 +8,8 @@ class StartEGen():
 	self.Map = M
 	self.Start_Goals = SG
 
-<<<<<<< HEAD
-
-def main():
-    if(len(sys.argv[:])<2):
-=======
 def main(S):
     if(len(sys.argv[:])<2 and S==sys.argv[:]):
->>>>>>> 2a9d016... EVERYTHING_EXCEPT_SERVER_AND_FDA_CONFIGURED(90%)
         print("MUST ENTER MAP PATH IN ARG 1")
 	sys.exit(-1)
     if(S!=sys.argv[:]):
@@ -28,9 +22,6 @@ def main(S):
     else:
 	E2 = E.CreateENV(S)
 
-<<<<<<< HEAD
-    mapfull = mapMake(M)
-=======
     i = None
     k = 0
     E3 = []
@@ -55,6 +46,5 @@ def main(S):
 
     #print("SGEN MAP:",SGEN.Map," SGEN STARt/GOALS:", SGEN.Start_Goals)
     return SGEN
->>>>>>> 2a9d016... EVERYTHING_EXCEPT_SERVER_AND_FDA_CONFIGURED(90%)
 if __name__=="__main__":
     main(sys.argv[:])
