@@ -12,6 +12,6 @@ def main():
     E = EnvGen()
     M = E.CreateENV(sys.argv[1])
 
-    mapMake(M)
+    mapfull = mapMake(M)
 if __name__=="__main__":
     main()

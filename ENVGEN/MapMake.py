@@ -12,7 +12,8 @@ def plotlinelow(mapfull, x0, y0, x1, y1):
     y = y0
 
     for x in range(x0, x1):
-        mapfull[x][y] = 0
+        for y2 in range(y-19, y+19):
+            mapfull[x][y2] = 0
         if D > 0:
             y += yi
             D -= 2*dx
@@ -29,7 +30,8 @@ def plotlinehigh(mapfull, x0, y0, x1, y1):
     x = x0
 
     for y in range(y0, y1):
-        mapfull[x][y] = 0
+        for x2 in range(x-19, x+19):
+            mapfull[x2][y] = 0
         if D > 0:
             x += xi
             D -= 2*dy
@@ -84,8 +86,18 @@ def mapMake(mapList):
         for i in range(0, obslen):
             point = obstacle[i]
             point2 = obstacle[(i+1)%obslen]
+
+            for x in range(int(point[0] * 100) + size/2 - 19, int(point[0] * 100) + size/2 + 19):
+                for y in range(int(point[1] * 100) + size/2 - 19, int(point[1] * 100) + size/2 + 19):
+                    mapfull[x][y] = 0
             
-            plotline(mapfull, int(point[0] * 100), int(point[1] * 100), int(point2[0] * 100), int(point2[1] * 100))
+            plotline(mapfull, int(point[0] * 100) + size/2, int(point[1] * 100) + size/2, int(point2[0] * 100) + size/2, int(point2[1] * 100) + size/2)
     
+    f = open("Maze", 'w')
+    for line in mapfull:
+        for char in line:
+            f.write(str(char) + " ")
+        f.write('\n')
+
     return mapfull
                 
