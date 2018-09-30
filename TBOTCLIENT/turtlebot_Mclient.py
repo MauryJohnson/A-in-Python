@@ -34,10 +34,11 @@ def Coordinates(data):
         turtlebot_control = rospy.ServiceProxy("turtlebot_control",TurtleBotControl)
 	resp1 = turtlebot_control(Point(data[0],data[1],data[2]))
 	print "Response:",resp1
-	return
+	return "OK"
     except rospy.ServiceException, e:
-        print "Service call failed/BOT POSITION FAILURE??: %s"%e
-	sys.exit(-2)
+        #print "Service call failed/BOT POSITION FAILURE??: %s"%e
+	#sys.exit(-2)
+	return e
     rospy.spin()
     #print("WAITING FOR: turtlebot_state")
     #rospy.wait_for_service('turtlebot_state')
@@ -65,4 +66,4 @@ if __name__ == "__main__":
         sys.exit(-1)
     print "Requesting COORDINATES [%s,%s,%s]"%(x, y, z)
     #print (Coordinates())
-    Coordinates([x,y,z])
+    print(Coordinates([x,y,z]))

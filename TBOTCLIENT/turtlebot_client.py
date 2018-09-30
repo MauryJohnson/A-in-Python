@@ -38,4 +38,4 @@ if __name__ == "__main__":
         #print usage()
         #sys.exit(1)
     #print "Requesting COORDINATES [%s,%s]"%(x, y)
-    print (Coordinates())
+    (Coordinates())
