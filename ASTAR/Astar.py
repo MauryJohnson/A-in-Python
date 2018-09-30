@@ -10,6 +10,18 @@ from argparse import ArgumentParser
 
 import sys
 
+<<<<<<< HEAD
+=======
+sys.path.append('../ENVGEN')
+sys.path.append('ENVGEN')
+print("CURR DIR:",os.getcwd())
+import StartEGen
+
+sys.path.append("../TBOTCLIENT")
+sys.path.append("TBOTCLIENT")
+import RunClient
+
+>>>>>>> 2a9d016... EVERYTHING_EXCEPT_SERVER_AND_FDA_CONFIGURED(90%)
 from numpy import loadtxt
 
 #Visited/Closed List
@@ -369,13 +381,44 @@ def MaxLen():
 	    MidY = (Ccount/2.0)
 	    z=Ccount
     return y
+<<<<<<< HEAD
 def main():
+=======
+
+#Requests the position of the bot
+def RequestClient():
+    #Start Process to request client
+    PrevDir = os.getcwd()
+    os.chdir("TBOTCLIENT")
+    p = Popen(['python ./RunClient.py',''],stdin=PIPE,stdout=PIPE,stderr=PIPE,shell=True)
+    output,err = p.communicate("Input data passed to subprocess")
+    rc = p.returncode
+    #p.wait()
+    print ("Returned to ASTAR:",rc,output )
+    os.chdir(PrevDir)
+#Move to a position which would be comprised of doubles rounded to 100th place after decimal
+def CommandClient(position):
+    PrevDir = os.getcwd()
+    print("ASTAR: Command Client to:",' '.join(position))
+    #Start Process to command client
+    os.chdir("TBOTCLIENT")
+    p = Popen(['python ./RunClient.py '+' '.join(position),''],stdin=PIPE,stdout=PIPE,stderr=PIPE,shell=True)
+    output, err = p.communicate("Input data passed to subprocess")         
+    rc = p.returncode
+    #p.wait()
+    print ("Returned to ASTAR:",rc,output)
+    os.chdir(PrevDir)
+
+#S = [MAP,x,y,x,y]    
+def main(S):
+>>>>>>> 2a9d016... EVERYTHING_EXCEPT_SERVER_AND_FDA_CONFIGURED(90%)
     global Goal
     global ENV
     global ClosedList
     global PathSeq
     global F
 
+<<<<<<< HEAD
     if(len(sys.argv[:])<5):
         print("MUST ENTER START [row,col] ARGuMENT AND GOAL [row,col] ARGUMENT!")
 	sys.exit(-1)
@@ -412,7 +455,32 @@ def main():
     #print (x)
     PrintENV(x)
 
+=======
+    if(len(sys.argv[:])<6) and S==sys.argv[:]:
+        print("MUST ENTER START [x,y] ARGuMENT AND GOAL [x,y] ARGUMENT + PATH_TO_MAZE_FILE")
+	sys.exit(-1)
+    f = None
+    if S!=sys.argv[:]:
+	print ("Astar Called from another program")
+	#f = open("".join(S),'r')
+	ENV = S[0]
+	#RC = RequestClient()
+	#sys.exit(-2) 
+    #CC = CommandClient(["1.25","0.1","0.0"]) 
+    #Requests Position Forever... Until Given
+    #RC = RequestClient()
+    #ASTAR
+    #print ("Array")
+    else:
+        f = open(sys.argv[5],'r')
+        x = f.read().splitlines()
+        f.close()
+        #print ("Array")
+        #print (x)
+        PrintENV(x)
+>>>>>>> 2a9d016... EVERYTHING_EXCEPT_SERVER_AND_FDA_CONFIGURED(90%)
 ###############################################################ASSUME GRID IS NXN#### AND PREFERRABLY EVEN###################################################################  
+    sys.argv = S
     L = MaxLen()
     print("MAX LENGTH:",L)
     #Midpoint used to convert neg to pos coordinate numbers for env
@@ -551,4 +619,4 @@ def main():
     print ("NO GOAL FOUND!!!!")
 
 if __name__=="__main__":
-    main()
+    main(sys.argv[:])

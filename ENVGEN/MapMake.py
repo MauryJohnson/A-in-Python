@@ -12,8 +12,12 @@ def plotlinelow(mapfull, x0, y0, x1, y1):
     y = y0
 
     for x in range(x0, x1):
+<<<<<<< HEAD
         for y2 in range(y-19, y+19):
             mapfull[x][y2] = 0
+=======
+        mapfull[x][y] = 0
+>>>>>>> 2a9d016... EVERYTHING_EXCEPT_SERVER_AND_FDA_CONFIGURED(90%)
         if D > 0:
             y += yi
             D -= 2*dx
@@ -30,8 +34,12 @@ def plotlinehigh(mapfull, x0, y0, x1, y1):
     x = x0
 
     for y in range(y0, y1):
+<<<<<<< HEAD
         for x2 in range(x-19, x+19):
             mapfull[x2][y] = 0
+=======
+        mapfull[x][y] = 0
+>>>>>>> 2a9d016... EVERYTHING_EXCEPT_SERVER_AND_FDA_CONFIGURED(90%)
         if D > 0:
             x += xi
             D -= 2*dy
@@ -86,6 +94,7 @@ def mapMake(mapList):
         for i in range(0, obslen):
             point = obstacle[i]
             point2 = obstacle[(i+1)%obslen]
+<<<<<<< HEAD
 
             for x in range(int(point[0] * 100) + size/2 - 19, int(point[0] * 100) + size/2 + 19):
                 for y in range(int(point[1] * 100) + size/2 - 19, int(point[1] * 100) + size/2 + 19):
@@ -101,3 +110,9 @@ def mapMake(mapList):
 
     return mapfull
                 
+=======
+            
+            plotline(mapfull, int(point[0] * 100), int(point[1] * 100), int(point2[0] * 100), int(point2[1] * 100))
+    
+    return mapfull
+>>>>>>> 2a9d016... EVERYTHING_EXCEPT_SERVER_AND_FDA_CONFIGURED(90%)
