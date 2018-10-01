@@ -8,8 +8,40 @@ def toArrcoord(n):
 def toRealcoord(n):
     return float(n - staggermod) / 100
 
-def addStartGoal(visibility{Graph, mapfull, start, goal):
-    if visibilityGraph
+def addStartGoal(visibilityGraph, mapfull, start, goal):
+    if lineOfSight(mapfull, (toArrcoord(start[0]),toArrcoord(start[1])), goal):
+        cost = distance(start, goal)
+        visibilityGraph[start] = [goal, cost]
+        visibilityGraph[goal] = [start, cost]
+        return visibilityGraph
+    visibilityGraph[start] = []
+    for key in visibilityGraph.keys():
+        if start[0] == key[0] and start[1] == key[1]:
+            continue
+        print "New tentative connection ", (start, key)
+        if lineOfSight(mapfull, (toArrcoord(start[0]), toArrcoord(start[1])), (toArrcoord(key[0]), toArrcoord(key[1]))):
+            print "New connection ", (start, key)
+            cost = distance(start, key)
+            visibilityGraph[start].append((key, cost))
+            visibilityGraph[key].append((start, cost))
+    visibilityGraph[goal] = []
+    for key in visibilityGraph.keys():
+        if goal[0] == key[0] and goal[1] == key[1]:
+            continue
+        print "New tentative connection ", (goal, key)
+        if lineOfSight(mapfull, (toArrcoord(goal[0]), toArrcoord(goal[1])), (toArrcoord(key[0]), toArrcoord(key[1]))):
+            print "New connection ", (goal, key)
+            cost = distance(goal, key)
+            visibilityGraph[goal].append((key, cost))
+            visibilityGraph[key].append((goal, cost))
+
+def deleteStartGoal(visibilityGraph, start, goal):
+    for item in visibilityGraph[start]:
+        visibilityGraph[item[0]].remove((start, item[1]))
+    del visibilityGraph[start]
+    for item in visibilityGraph[goal]:
+        visibilityGraph[item[0]].remove((goal, item[1]))
+    del visibilityGraph[goal]
 
 # def checklinelow(mapfull, x0, y0, x1, y1):
 #     dx = x1 - x0
