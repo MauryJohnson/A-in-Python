@@ -1,5 +1,6 @@
 from EnvGen import EnvGen
 from MapMake import mapMake
+from VisibilityGraph import computeVisibilityGraph
 
 import sys
 class StartEGen():
@@ -40,6 +41,8 @@ def main(S):
     #print "NEW E2:",E3
     ###############################################
     M = mapMake(E2)
+    graph = computeVisibilityGraph(E2, M)
+    print graph
     ##########MAP
     #print("MAP:",M,"Size:",len(M))
     SGEN = StartEGen(M,E3)
