@@ -1,6 +1,6 @@
 from EnvGen import EnvGen
 from MapMake import mapMake
-from VisibilityGraph import computeVisibilityGraph
+from VisibilityGraph import computeVisibilityGraph, addStartGoal, deleteStartGoal
 
 import sys
 class StartEGen():
@@ -42,7 +42,14 @@ def main(S):
     ###############################################
     M = mapMake(E2)
     graph = computeVisibilityGraph(E2, M)
-    print graph
+    print "Graph V1: \n", graph
+
+    start = (float(E3[0][0]), float(E3[0][1]))
+    goal = (float(E3[1][0]), float(E3[1][1]))
+    addStartGoal(graph, M, start, goal)
+    print "Graph V2: \n", start, graph[start]
+    deleteStartGoal(graph, start, goal)
+    print "Graph V3: \n", graph
     ##########MAP
     #print("MAP:",M,"Size:",len(M))
     SGEN = StartEGen(M,E3)
