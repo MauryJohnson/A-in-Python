@@ -132,7 +132,7 @@ def grid(x,y):
 	#print ("LINE OF SIGHT::Out of Bounds")
 	#sys.exit(-2)
 	return False
-    return ENV[x][y]==0
+    return ENV[y][x]==0
 
 #[y,x,f,py,px,dfp]
 def LineOfSight(s1,s2):
@@ -588,8 +588,8 @@ def main(S_IN):
 	    print("TRACE PATH (2's ONLY)")
 	    #PrintE()
 	    print ("Compressed::",PathSeq[:])
-	    for I in PathSeq:
-	 	CommandClient(I)
+	    #for I in PathSeq:
+	 	#CommandClient(I)
 	    #PrintE()
 	    return PathSeq[:]
 	

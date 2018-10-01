@@ -129,7 +129,7 @@ def grid(x,y):
     if(x<0 or x>len(ENV) or y<0 or y>len(ENV)):
 	#print ("LINE OF SIGHT::Out of Bounds")
 	return false
-    return ENV[x][y]==0
+    return ENV[y][x]==0
 
 #[y,x,f,py,px,dfp]
 def LineOfSight(s1,s2):

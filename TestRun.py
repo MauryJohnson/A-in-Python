@@ -208,9 +208,8 @@ def main():
     Sidx = 0
     for i in MapList:        
 	print i
-	#First Run Command to start env, then...
-	SGEN =  StartEGen.main(Maps[1]+i[1])
-	#print("SGEN MAP:",SGEN.Map)
+	#BUILD List of Start_Goals
+	SGEN =  StartEGen.main(Maps[1]+i[1])	
 	SG = []
 	H = []
 	countSG = 0	
@@ -218,14 +217,20 @@ def main():
 	    #print j
 	    if(countSG==2):
 		#print "STOP:\n"
-		#Set Goal Position prior
+		
+		#BUILD MAP SPECIFIC TO START AND GOAL POSITIONS
+		##SGEN.Map is the Map Table, changes depending on start and 			goal vertices...
+		#BUILD MAP SPECIFIC TO START AND GOAL POSITIONS
+		SGEN.InitializeTable(SGEN.Vertex_List,SG)	
+  	  	SGEN.BuildTable([SG[0][0],SG[0][1]],[SG[1][0],SG[1][1]])	
+		
+	   	#Set Goal Position prior
 	    	CommandJ[0] = SG[1][0]
 	    	CommandJ[2] = SG[1][1]
 	    	#Set Up Start Pos for ROBOTPOSE
    	    	CommandJ2[0] = SG[0][0]
 	    	CommandJ2[2] = SG[0][1]
-	    	#Set World Map path num
-	    	#CommandJ3[1] = i[1]
+	    	#Set World Map path
   	    	R = Command + "".join(CommandJ)+Command2+"".join(CommandJ2)+Command3+WMaps[0]+i[0]+")"
 	    	print "Start Command:",R
 	    	#StartGZB(R) #- Start RosGazebo
@@ -233,14 +238,11 @@ def main():
 	    	#Handler() #- First Waits until RosGazebo starts then Checks Both Servers
 	        print "GOTO:",SG[0][0],SG[0][1],SG[1][0],SG[1][1], "MAP:",i
 		countSG= 0
-	    	if(ARG=="A"):
-		    H = Astar.main([SGEN.Map,SG[1][0],SG[1][1],SG[0][0],SG[0][1]])	    
-		    if H !=None:
-	                H = Astar.main([SGEN.Map,SG[0][0],SG[0][1],SG[1][0],SG[1][1]])
-	    	else:
-		    H = DFAstar.main([SGEN.Map,SG[1][0],SG[1][1],SG[0][0],SG[0][1]])      
-		    if H!=None:
-		        H = DFAstar.main([SGEN.Map,SG[0][0],SG[0][1],SG[1][0],SG[1][1]])
+		#Start A* or FDA*
+	    	#if(ARG=="A"):
+		    #H = Astar.main([SGEN.Map,SG[0][0],SG[0][1],SG[1][0],SG[1][1]])	  
+	    	#else:
+		    #H = DFAstar.main([SGEN.Map,SG[0][0],SG[0][1],SG[1][0],SG[1][1]])      
 		#)
 		if(H!=None):
 		    Goal_Found = True
