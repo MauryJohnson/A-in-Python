@@ -141,9 +141,9 @@ def mapMake(mapList):
     
     print "Writing to file"
     f = open("Maze", 'w')
-    for y in range(size - 1, -1):
+    for y in range(0, size):
         for x in range(0, size):
-            f.write(str(mapfull[x][y]) + " ")
+            f.write(str(mapfull[x][size - y - 1]) + " ")
         f.write('\n')
 
     print "Success"
