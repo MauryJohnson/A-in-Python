@@ -43,11 +43,11 @@ class EnvGen():
 	    print("ALL POINTS SATISFIED",end = "\n")
 	    return
 	if(A[0]==sys.maxint):
-	    print("ADD A1")
+	    #print("ADD A1")
 	    A[0] = X
 	    return
 	if(A[1]==sys.maxint):
-	    print("ADD A2")
+	    #print("ADD A2")
 	    A[1] = X
 	    return
 	#if(B[0]==sys.maxint):

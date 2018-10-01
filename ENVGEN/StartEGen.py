@@ -2,6 +2,8 @@ from EnvGen import EnvGen
 from MapMake import mapMake
 import math
 import sys
+#from Astar import Execute
+from subprocess import Popen, PIPE
 
 #ENV CAN EVEN JUST BE LIST OF ALL BLOCKS AND THEIR AREAS
 #Also Get 
@@ -12,14 +14,19 @@ class StartEGen():
     def __init__(self,VL,SG,ENVS):
 	self.EnvTable = []
  	self.ENV = []
+	#self.Borders = []
 	self.Y = -1
 	self.X = -1
+	self.MidY = -1
+	self.MidX = -1
  	self.Map = []
 	#Should only keep track of the next start goal pair to use
 	self.Start_Goals = SG
 	self.Vertex_List = VL
 	#Generate entire 2D ENV WITH BLOCKS
- 	self.GenEnv(ENVS,VL)
+	#self.ENV = mapMake 	
+	
+	#self.GenEnv(ENVS,VL)
   	#Initialize start, goal, block vertices
 	#USE IN TESTRUN FOR EVERY SG PAIR
 ########self.InitializeTable(VL)
@@ -43,7 +50,23 @@ class StartEGen():
 
  	return round(math.sqrt(X+Y),2)
 
-    
+    def PCheck(self,MaxEnvYX,Pairs,i):
+	if Pairs[0][0]!='NEXT LINE':
+	    D = self.Distance(Pairs)
+	    print "Distance:",D
+	    if i%2==1:
+		if(D>MaxEnvYX[0]):
+		    MaxEnvYX[0] = D	
+	    else:
+		if(D>MaxEnvYX[1]):
+		    MaxEnvYX[1] = D
+    #def Exec(self,E):
+	#Execute(
+    def ValidPoint(self,MyPoint):
+	print("Validate point")
+	i = 0
+	k = 0
+	
     def GenEnv(self,ENVS,VtexList):
 	if(ENVS==[] or VtexList==[]):
 	    print "No 2D ENV to GEN"
@@ -58,12 +81,19 @@ class StartEGen():
 	#ADJACENT PAIRS
 	#Even,ODD,EVEN,ODD
 	MaxEnvYX = [-sys.maxint,-sys.maxint]
+
+	A_Star_Points = []
+
 	print ""
 	while i<len(ENVS):
 	    if(len(Pairs)>=2):
 		print "ENV PAirs",Pairs
-		if Pairs[0][0]!='NEXT LINE':
-		    print self.Distance(Pairs)
+
+		#TRACE ASTAR################
+		A_Star_Points.append(Pairs)
+
+		self.PCheck(MaxEnvYX,Pairs,i)
+		print "MAX ENV:",MaxEnvYX
 		i-=1
 		Pairs = []
 		continue
@@ -71,21 +101,92 @@ class StartEGen():
 		Pairs.append(ENVS[i])
 	        i+=1
 		continue
-	print "ENV PAirs",Pairs
-	if Pairs[0][0]!='NEXT LINE':
-	    print "Distance:", self.Distance(Pairs)
+	print "SECOND TO FINAL ENV PAirs",Pairs
+	
+	#TRACE ASTAR################
+	A_Star_Points.append(Pairs)
 
+	self.PCheck(MaxEnvYX,Pairs,i)
+	#Check first and last pairs
+	Pairs = []
+	Pairs.append(ENVS[0])
+	Pairs.append(ENVS[i-1])
+	print "FINAL ENV PAirs",Pairs
+
+	#TRACE ASTAR################
+	A_Star_Points.append(Pairs)
+	
+	self.PCheck(MaxEnvYX,Pairs,i-1)
+
+	print "MAX ENV LENGTHS:",MaxEnvYX
+	#GET MIDPOINTS
+	self.Y = int(MaxEnvYX[0]*100)
+	self.MidY = int((MaxEnvYX[0]*100)/2)
+	self.X = int(MaxEnvYX[1]*100)
+	self.MidX = int((MaxEnvYX[1]*100)/2)
+	print "MIDPOINT Y,X:[%d,%d]"%(self.MidY,self.MidX)
+
+	i = 0
+	k = 0
+
+	#SET ENV
+	for i in range(self.Y):
+	    X_DIRECTION = []
+	    k = 0
+	    for k in range(self.X):
+		if(i==0 or i ==(self.Y)-1):
+		    X_DIRECTION.append(0)
+		else:
+		    X_DIRECTION.append(1)
+	    X_DIRECTION[0] = 0
+	    X_DIRECTION[k] = 0
+	    self.ENV.append(X_DIRECTION)
+	#print "ENV:", self.ENV
+	#HAVE ENV WITH ALL ZEROES        
+	#sys.exit(0)
+	#FOR BUILD ENV...
+	print "SIZE:%d,%d"%(i,k)
+	#Border = [[0,0],[i,0],[i,k],[0,k]]	
+	#Pairs = []
+	
+	# CREATE THE PROCESS
+	#print("\nStart Ros-Gazebo")
+        #RGZ_Pid = Process(target=RGZ, args = [R,])
+        #RGZ_Pid.daemon = True	
+        #RGZ_Pid.start()
+        #print("Ros-Gazebo PID:",RGZ_Pid)
+
+	#Execute(self.ENV,i,k,0,k)
+	#Execute(self.ENV,0,k,0,0)
+	#Execute(self.ENV,0,0,i,0)
+	#sExecute(self.ENV,i,0,i,k)
+	
+
+	#i = 2*self.MidY-1	
+	#while i>=0:
+	    #self.ENV[i][0] = 0
+	    #i-=1
+	
+	print self.ENV
+	print "LEAVEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"
+	#sys.exit(0)
+	A_Star_Points = []
 	Pairs = []
 	i = 0
+	#K gets last neighbor for last object
+	k = 0
 	NLine  =False
 	MaxVtexYX = [-sys.maxint,-sys.maxint]
 	while i<len(VtexList):
 	    if(len(Pairs)>=2):
 		if(Pairs[1][0]=='NEXT LINE'):
 		    Pairs[0]=['NEXT LINE']
+		    #k+=1
 		print "BLOCK PAirs",Pairs
-		if Pairs[0][0]!='NEXT LINE':
-		    print "Distance:", self.Distance(Pairs)
+		self.PCheck(MaxVtexYX,Pairs,i)
+
+		#TRACE ASTAR################
+
 		i-=1
 		Pairs = []
 		NLine = False
@@ -95,16 +196,35 @@ class StartEGen():
 		    Pairs.append(['NEXT LINE'])
 		    #Pairs.append(['NEXT LINE'])	
 		    NLine = True
+		    k=i
 		    i+=1
 		    continue	
 		else:		
 		    Pairs.append(VtexList[i])
 	        i+=1
 		continue
-	print "BLOCK PAirs",Pairs
-	if Pairs[0][0]!='NEXT LINE':
-	    print "Distance:",self.Distance(Pairs)
+	print "2nd to FINAL BLOCK PAirs",Pairs
+	
+	#TRACE ASTAR################
 
+	self.PCheck(MaxVtexYX,Pairs,i)
+	#Check first and last pairs
+	Pairs = []
+	Pairs.append(VtexList[k])
+	Pairs.append(VtexList[i-1])
+	print "FINAL BLOCK PAirs",Pairs
+
+
+	
+	
+
+	#TRACE ASTAR################
+
+	self.PCheck(MaxVtexYX,Pairs,i-1)
+
+	#self.Borders = 
+
+	#print "Max Vtex:",MaxVtexYX
 	sys.exit(0)
     #Add all Block Vertices and start, goal vertices to table
     def InitializeTable(self,VtexList,SG):
@@ -120,7 +240,7 @@ class StartEGen():
 	    L = [i,['TEST NEIGHBORS']]
 	    self.EnvTable.append(L)
 	#EnvTable[0].append(['SECOND NEIGH'])
-  	print self.EnvTable
+  	#print self.EnvTable
 
     #Build entire table for A,DFA*
     def BuildTable(self,Start,Goal):
@@ -250,11 +370,8 @@ def main(S):
     print "StartGoalPairs:",StartGoalPairs,"\nENVS:",ENVS,"\nBLOCKS:",Blocks
     
     SGEN = StartEGen(Blocks,StartGoalPairs,ENVS)
- 
-    #return
-   
-    #M = mapMake(E2)
-   
+    
+    #sys.exit(-1)
     return SGEN
 if __name__=="__main__":
     main(sys.argv[:])

@@ -2,34 +2,34 @@ import sys
 from fractions import gcd
 from Queue import Queue
 
-def fillobstacle(mapfull, obstacle, size):
-    # find midpoint
-    x_mid = 0
-    y_mid = 0
-    for point in obstacle:
-        x_mid += point[0]
-        y_mid += point[1]
-    x_mid /= len(obstacle)
-    y_mid /= len(obstacle)
+# def fillobstacle(mapfull, obstacle, size):
+#     # find midpoint
+#     x_mid = 0
+#     y_mid = 0
+#     for point in obstacle:
+#         x_mid += point[0]
+#         y_mid += point[1]
+#     x_mid /= len(obstacle)
+#     y_mid /= len(obstacle)
 
-    # Bfs
-    fringe = Queue((size/2) ** 2)
-    fringe.put((x_mid, y_mid))
-    while not fringe.empty():
-        point = fringe.get()
-        x = point[0]
-        y = point[1]
-        if mapfull[x][y] == 0:
-            continue
-        mapfull[x][y] = 0
-        fringe.put((x, y-1))
-        fringe.put((x-1, y-1))
-        fringe.put((x-1, y))
-        fringe.put((x-1, y+1))
-        fringe.put((x, y+1))
-        fringe.put((x+1, y+1))
-        fringe.put((x+1, y))
-        fringe.put((x+1, y-1))
+#     # Bfs
+#     fringe = Queue((size/2) ** 2)
+#     fringe.put((x_mid, y_mid))
+#     while not fringe.empty():
+#         point = fringe.get()
+#         x = point[0]
+#         y = point[1]
+#         if mapfull[x][y] == 0:
+#             continue
+#         mapfull[x][y] = 0
+#         fringe.put_nowait((x, y-1))
+#         fringe.put_nowait((x-1, y-1))
+#         fringe.put_nowait((x-1, y))
+#         fringe.put_nowait((x-1, y+1))
+#         fringe.put_nowait((x, y+1))
+#         fringe.put_nowait((x+1, y+1))
+#         fringe.put_nowait((x+1, y))
+#         fringe.put_nowait((x+1, y-1))
 
 def plotlinelow(mapfull, x0, y0, x1, y1):
     dx = x1 - x0
@@ -81,7 +81,11 @@ def plotline(mapfull, x0, y0, x1, y1):
 
 def mapMake(mapList):
 
-    size = (int(mapList[1][0]) - int(mapList[1][1])) * 100
+    size = (int(mapList[1][0]) - int(mapList[1][1]) + 1) * 100
+    staggermod = -(int(mapList[1][1])) * 100
+
+    print size
+    print staggermod
 
     obstacles = []
     index = mapList.index(['-BLOCKS-']) + 1
@@ -90,8 +94,8 @@ def mapMake(mapList):
     while(not mapList[index][0] == '-BLOCKS-'):
         index += 1
         while(not (mapList[index][0] == 'NEXT LINE' or mapList[index][0] == '-BLOCKS-')):
-            print mapList[index], mapList[index][0], mapList[index][0] == 'NEXT LINE'
-            temp.append((int(float(mapList[index][0]) * 100) + size/2, -int(float(mapList[index][1]) * 100) + size/2))
+            print mapList[index], mapList[index][0], mapList[index][0] == 'NEXT LINE',
+            temp.append((int(float(mapList[index][0]) * 100) + staggermod, int(float(mapList[index][1]) * 100) + staggermod))
             index += 1
         obstacles.append(temp)
         temp = []
@@ -102,6 +106,7 @@ def mapMake(mapList):
 
     mapfull = []
 
+    print "Generating Map Array"
     for x in range(0, size):
         temp = []
         for y in range(0, size):
@@ -111,25 +116,37 @@ def mapMake(mapList):
                 temp.append(1)
         mapfull.append(temp)
     
+    print "Generating Obstacles"
     for obstacle in obstacles:
         obslen = len(obstacle)
+        print obstacle
         for i in range(0, obslen):
             point = obstacle[i]
             point2 = obstacle[(i+1)%obslen]
+            print "point " + str(i) + ": " + str(point),
 
-            for x in range(point[0] - 19, point[0] + 19):
-                for y in range(point[1] - 19, point[1] + 19):
-                    mapfull[x][y] = 0
+            try:
+                for x in range(point[0] - 19, point[0] + 19):
+                    for y in range(point[1] - 19, point[1] + 19):
+                        mapfull[x][y] = 0
+            except:
+                print obstacle
+                print x,y
+                exit(0)
             
+            print "Plotting...",
             plotline(mapfull, point[0], point[1], point2[0], point2[1])
-        fillobstacle(mapfull, obstacle, size)
+        print "Filling Obstacle"
+        #fillobstacle(mapfull, obstacle, size)
     
-    #f = open("Maze", 'w')
-    #for y in range(0, size):
-        #for x in range(0, size):
-            #f.write(str(mapfull[x][y]) + " ")
-        #f.write('\n')
+    print "Writing to file"
+    f = open("Maze", 'w')
+    for y in range(0, size):
+        for x in range(0, size):
+            f.write(str(mapfull[x][size - y - 1]) + " ")
+        f.write('\n')
 
+    print "Success"
     return mapfull
                 
 

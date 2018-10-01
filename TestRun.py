@@ -216,14 +216,22 @@ def main():
 	for j in SGEN.Start_Goals[:]:
 	    #print j
 	    if(countSG==2):
+
 		#print "STOP:\n"
+
+
+
+		#######################################BUILD MAP
+		#############BUILD MAP SPECIFIC TO START AND GOAL POSITIONS
 		
-		#BUILD MAP SPECIFIC TO START AND GOAL POSITIONS
 		##SGEN.Map is the Map Table, changes depending on start and 			goal vertices...
 		#BUILD MAP SPECIFIC TO START AND GOAL POSITIONS
-		SGEN.InitializeTable(SGEN.Vertex_List,SG)	
-  	  	SGEN.BuildTable([SG[0][0],SG[0][1]],[SG[1][0],SG[1][1]])	
-		
+		#SGEN.InitializeTable(SGEN.Vertex_List,SG)	
+  	  	#SGEN.BuildTable([SG[0][0],SG[0][1]],[SG[1][0],SG[1][1]])	
+		########################################################BUILDL MAP
+		print ("\n\nFIRST GENERATE NEW GRAPH BASED ON START AND GOAL POSITIONS\n\n")
+
+
 	   	#Set Goal Position prior
 	    	CommandJ[0] = SG[1][0]
 	    	CommandJ[2] = SG[1][1]
@@ -233,9 +241,13 @@ def main():
 	    	#Set World Map path
   	    	R = Command + "".join(CommandJ)+Command2+"".join(CommandJ2)+Command3+WMaps[0]+i[0]+")"
 	    	print "Start Command:",R
+
 	    	#StartGZB(R) #- Start RosGazebo
 		#StartSrv() #- Start Both Servers
 	    	#Handler() #- First Waits until RosGazebo starts then Checks Both Servers
+
+
+
 	        print "GOTO:",SG[0][0],SG[0][1],SG[1][0],SG[1][1], "MAP:",i
 		countSG= 0
 		#Start A* or FDA*
@@ -244,6 +256,9 @@ def main():
 	    	#else:
 		    #H = DFAstar.main([SGEN.Map,SG[0][0],SG[0][1],SG[1][0],SG[1][1]])      
 		#)
+
+
+
 		if(H!=None):
 		    Goal_Found = True
 		    PSeq = H
@@ -264,22 +279,7 @@ def main():
 	    #sys.exit(-3)
 
     print("ALL SOLUTIONS:",SOLN)
-	     #rosparam set goal_position [j[2],j[3]]
-	     #"ROBOT_INITIAL_POSE= ""-x "+str(j[0])+" -y "+str(j[1])+ 	""    +		"roslaunch turtlebot_gazebo turtlebot_world.launch 			world_file:=$WORLD/world_1.world"
-
-	 #Call process Turtlebot Run for world_i...
-	 #Gen ENV for map_i
-	 #RunAstar()/RunFDAstar will command TBot to move at the end...
-	 #Wait for Complete process and continue...
-    #for i in MapList:
-	#s = "
-
-
-    #Must gen env based upon map i opened
-    #Must wait for A* to return an answer given all coordinates x,y for map i
-    #Must wait for FDA* to return an answer given all coordinates x,y for map i
-
-        
+	     
 
     print("Start")
     
