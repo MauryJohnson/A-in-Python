@@ -52,34 +52,15 @@ def Compress():
     #P.insert(0,PathSeq[-1])
     i = []
     k = len(PathSeq)-1
+    CompressedPSeq = []
+    CompressedPSeq.append(PathSeq[k])
+    k-=1
     while k>=0:
-	if(len(i)>4):
-	    #If suboptimal node
-	    sv = k
-	    ct = 0
-	    if(i[3]!=PathSeq[k][0] or i[4]!=PathSeq[k][1]):
-	        while(i[3]!=PathSeq[k][0] or i[4]!=PathSeq[k][1]): #and i[2] > PathSeq[k][2]):
-		    #print("POP NODES not Ancestors of GOAL PATH",PathSeq[k])   
-   		    ENV[int(MidY+PathSeq[k][1]*100)][int(MidX+PathSeq[k][0]*100)] = 4
-		    PathSeq.pop(k)
-		    k-=1
-		    if k<0:
-		        break
-		    ct+=1
-	        #IF duplicate node
-	        k = sv-ct
-		##print("")
-	    elif(i==PathSeq[k]):
-	        PathSeq.pop(k)
-	    #elif(i[3]==PathSeq[k][0] and i[4]==PathSeq[k][1]):
-		#P.insert(0,PathSeq[k])
-	    ###print("")
-	###print("")
-	i = PathSeq[k]
-	k-=1
-
-    #P.insert(0,PathSeq[0])
-    #PathSeq = P
+	if(CompressedPSeq[len(CompressedPSeq)-1][3]==PathSeq[k][0] and CompressedPSeq[len(CompressedPSeq)-1][4]==PathSeq[k][1]):
+	    print("IF:",CompressedPSeq[len(CompressedPSeq)-1][3],"==",PathSeq[k][0],"AND ",CompressedPSeq[len(CompressedPSeq)-1][4],"==", PathSeq[k][1])
+	    CompressedPSeq.insert(0,PathSeq[k])
+        k-=1 
+    PathSeq = CompressedPSeq
 ###########################################
 #INSTEAD OF STATE, USE [row,col,f(n),ParRow,ParCol]
 #Takes care of state.Parent
@@ -279,7 +260,7 @@ def Heuristic(s1):
     #return round(abs(End[0]-Start[0]) + abs(End[1]-Start[1])/100,2)
     
     #Euclidean Heuristic
-    return (((math.sqrt(float(End[0]-Start[0])*float(End[0]-Start[0]) + float(End[1]-Start[1])*float(End[1]-Start[1]) ))/100.00))
+    return (((math.sqrt(float(End[0]-Start[0])*float(End[0]-Start[0]) + float(End[1]-Start[1])*float(End[1]-Start[1]) ))))
     
     #Trace A* Heuristic
     #return round((math.ceil(math.sqrt(2)*min(abs(End[0]-Start[0]),abs(End[1]-Start[1])) + max(abs(End[0]-Start[0]),abs(End[1]-Start[1])) - min(abs(End[0]-Start[0]),abs(End[1]-Start[1])))/100.00),2)
@@ -305,20 +286,28 @@ def ClearToGo(Y,X):
 #Return List of all edges including [x,y,f,px,py,g]
 def Edges(S):
     global GRAPH
+    global PathSeq
+    global F
+
     Tuples = []
     print("\n\nSTART STATE:",S,"\n\n")
+
+    LastEntry = PathSeq[len(PathSeq)-1]
+
     try:
         #Iterate through tuples of graph of of current state...
         for tupe in GRAPH[S[0],S[1]]:
-	    F = S[5]+tupe[1]+Heuristic([tupe[0][0],tupe[0][1]])
-	    L = [
-	    tupe[0][0],
-	    tupe[0][1],
-	    F,
-	    S[0],
-	    S[1],
-	    S[5]+tupe[1]]
-	    Tuples.append(L)
+	    if(not F.Exists([tupe[0][0],tupe[0][1]])):
+	        Fx = S[5]+tupe[1]+Heuristic([tupe[0][0],tupe[0][1]])
+	        L = [
+	        tupe[0][0],
+	        tupe[0][1],
+	        Fx,
+	        S[0],
+	        S[1],
+	        S[5]+tupe[1]]
+	        Tuples.append(L)
+	   		
         print("Next Up Tuples:",Tuples)
     except:
 	print("Next Up Tuples ERR:",Tuples)
@@ -608,7 +597,7 @@ def main(S_IN):
 	if S[0]==Goal[0] and S[1]==Goal[1]:
 	    #PrintE()
 	    print ("\n\nFOUND GOAL!\n")
-	    ##print ("Uncompressed::",PathSeq[:])
+	    print ("Uncompressed::",PathSeq[:])
 	    ##print("")
 	    ############################################## This is equivalent to parent parent(s) function...
 	    Compress()
@@ -620,7 +609,7 @@ def main(S_IN):
    	    #sys.exit(-1)
 	    return PathSeq[:]
 	
-	ClosedList.append(S)
+	ClosedList.append([S[0],S[1]])
 
         #List of tuple successors
 	
@@ -632,7 +621,7 @@ def main(S_IN):
 	#sys.exit(0)
 	#print("ALL NON COLLISIONS:",L)
         #u = []
-	O = []
+	#O = []
 	#U = State()
 
 	##print("CLOSED LISTS",ClosedList)	
@@ -640,12 +629,14 @@ def main(S_IN):
 	#Check if already visited and not in fringe
 	#t = 0
 	for u in L:
-	    if u not in ClosedList:
+	    m = [u[0],u[1]]
+	    O = u
+	    if m not in ClosedList:
 		
-		#print(u," is not visited YET")
+		print(u," is not visited YET")
 		
 		if not F.Exists(u):
-		    #print(u," is not in fringe YET")
+		    print(u," is not in fringe YET")
 		    
 		    O = u
 		    O[3] = -1

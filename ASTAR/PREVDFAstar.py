@@ -25,8 +25,6 @@ F = Fringe()
 
 #Rows, Columns
 ENV = []
-#Dictionary
-GRAPH = []
 
 #Midpoints of graph in order to configure position
 #Given negative or positive x and y
@@ -38,8 +36,6 @@ MidY = 0
 #Goal =[5,5,0,5,5]
 Goal = []
 
-Start = []
-
 PathSeq = []
 
 #Remove Redundancies to have one path
@@ -48,19 +44,40 @@ PathSeq = []
 #Pop each redundant node
 def Compress():
     global PathSeq
+    global ENV
     #P = []
     #P.insert(0,PathSeq[-1])
     i = []
     k = len(PathSeq)-1
-    CompressedPSeq = []
-    CompressedPSeq.append(PathSeq[k])
-    k-=1
     while k>=0:
-	if(CompressedPSeq[len(CompressedPSeq)-1][3]==PathSeq[k][0] and CompressedPSeq[len(CompressedPSeq)-1][4]==PathSeq[k][1]):
-	    print("IF:",CompressedPSeq[len(CompressedPSeq)-1][3],"==",PathSeq[k][0],"AND ",CompressedPSeq[len(CompressedPSeq)-1][4],"==", PathSeq[k][1])
-	    CompressedPSeq.insert(0,PathSeq[k])
-        k-=1 
-    PathSeq = CompressedPSeq
+	if(len(i)>4):
+	    #If suboptimal node
+	    sv = k
+	    ct = 0
+	    if(i[3]!=PathSeq[k][0] or i[4]!=PathSeq[k][1]):
+	        while(i[3]!=PathSeq[k][0] or i[4]!=PathSeq[k][1]): #and i[2] > PathSeq[k][2]):
+		    #print("POP NODES not Ancestors of GOAL PATH",PathSeq[k])
+		    ENV[PathSeq[k][0]][PathSeq[k][1]] = 4
+		    PathSeq.pop(k)
+		    	
+		    k-=1
+		    if k<0:
+		        break
+		    ct+=1
+	        #IF duplicate node
+	        k = sv-ct
+		#print("")
+	    elif(i==PathSeq[k]):
+	        PathSeq.pop(k)
+	    #elif(i[3]==PathSeq[k][0] and i[4]==PathSeq[k][1]):
+		#P.insert(0,PathSeq[k])
+	    ##print("")
+	##print("")
+	i = PathSeq[k]
+	k-=1
+
+    #P.insert(0,PathSeq[0])
+    #PathSeq = P
 ###########################################
 #INSTEAD OF STATE, USE [row,col,f(n),ParRow,ParCol]
 #Takes care of state.Parent
@@ -89,7 +106,7 @@ def PrintENV(x):
 	    if(k!=''):
 	        try:
 		     success=True
-		     #print (int(k))
+		     ##print (int(k))
 		     print(int(k),end=' ')
 		except:
 		     success = False
@@ -98,64 +115,33 @@ def PrintENV(x):
 	ENV.append(Succ)
 	p1+=1
 	#print ("")
-#ITEMS ARE EACH HASHED ITEM
-def PrintGraph():
-    global GRAPH
-    global Start
 
-    print("ITEMS:")
-    for item in GRAPH:
-	print("ITEM:",item)
-    print("GRAPH TOTAL:")
-    print(GRAPH)
-    print("\n###########START EDGES?###############")
-    try: 
-	print(Start,"->>>>>>",GRAPH[Start[0],Start[1]])
-    except:
-	print("--------------NO START EDGES???------------")
-    print("\n###########GOAL EDGES?###############")
-    try: 
-	print(Goal,"->>>>>",GRAPH[Goal[0],Goal[1]])
-    except:
-	print("--------------NO GOAL EDGES???------------")
-def Cost(s1,s2):
-    global GRAPH
-    #LITERALLY ACCESS GRAPH[[s1[0],s1[1]], iterate through until can find the edge
-    #RETURNS THE COST OF s1 to s2, IF connection from s1 and s2 does not exist, return sys.maxint
 
-    for item in GRAPH[s1[0],s1[1]]:
-	print("COST CHECK ITEM 1:",item,"COMPARE TO ITEM:",s2)
-	if(item[0][0]==s2[0] and item[0][1]==s2[1]):
-	    print("Found Neighbor")
-	    return item[1]
-    
-    for item in GRAPH[s2[0],s2[1]]:
-	print("COST CHECK ITEM 2:",item,"COMPARE TO ITEM:",s1)
-	if(item[0][0]==s1[0] and item[0][1]==s1[1]):
-	    print("Found Neighbor")
-	    return item[1]
-    
-    return sys.maxint
+def Cost(s1,s2): #... IS 1 for traditional A*, but is dependant on the diagonal dist for free-direction A*
+    #print ("Cost Func from Coordinates of s1 to Coordinates of s2")
+    #print (s1)
+    #print (s2)
+    #print ("+1")
+    ################################### STANDARD A* COST
+    #return 1.0 
+    ################################### STANDARD A* COST
+    return 0.01
 
 def grid(x,y):
-    global ENV
     if(x<0 or x>len(ENV) or y<0 or y>len(ENV)):
 	#print ("LINE OF SIGHT::Out of Bounds")
+	#sys.exit(-2)
 	return False
     return ENV[y][x]==0
 
 #[y,x,f,py,px,dfp]
 def LineOfSight(s1,s2):
-    global MidX
-    global MidY
     if(s1 is None or s2 is None):
 	return False
-
-    x_0 = int(MidX+s1[0]*100)
-    y_0 = int(MidY+s1[1]*100)
-    x_1 = int(MidX+s2[0]*100)
-    y_1 = int(MidY+s2[1]*100)
-
+    x_0 = s1[1]
+    y_0 = s1[0]
+    x_1 = s2[1]
+    y_1 = s2[0]
     F = 0
     d_y = y_1-y_0
     d_x = x_1-x_0
@@ -202,7 +188,6 @@ def LineOfSight(s1,s2):
 		return False
 	    y_0 = y_0 + s_y
     return True
-
 def Parent(S):
     i = None
     p = []
@@ -217,14 +202,14 @@ def Parent(S):
 	    return i
     #print("FOUND NO PARENT")
     return None
-
+	#k+=1	
 #Chooses optimal path
 #s1, s2 are State Classes
 def UpdateVertex(s1,s2):
     global F   
 
     if(s1==[] or s2==[]):
-        return
+	return
  
     First = s1
     Second = s2
@@ -238,38 +223,39 @@ def UpdateVertex(s1,s2):
     #H = Heuristic(s2)
 
     #s2[2]
-       #############################################################################	
+    
+    #############################################################################	
     #Check if found a shorter adjacent path
     #print ("VALUE:",First[5]+C, "<", s2[5], "??")
     #############################################################################
-    P = Parent(s1)
+
+    ##print("LINE OF SIGHT:",LineOfSight(s1,s2))
+    P = Parent(s1)	
 
     C2 = C+Cost(P,Second)
- 
+
     if LineOfSight(P,s2):
+	#Path 2
+	if P[5] + C2 < Second[5]:
+	    #Found a better path for LOS, new parent
+	    Second[5] = round(P[5] + C2,2)
+	    Second[3] = First[3]
+	    Second[4] = First[4]
+
+	    if(F.Exists(Second)):
+		F.Remove(Second[0],Second[1])
+
+	    Second[2] = Heuristic(Second)+Second[5]
+
+            #print("s2 F VALUE CASE 1:",Second[2])
+
+	    F.Insert(Second)
+    else:
+	#Path 1
 
         if(First[5] + C < s2[5]):
 
 	    #Found a better path, new parent	
-	    s2[5] = round(First[5] + C,2)
-	    s2[3] = First[0]
-	    s2[4] = First[1]
-            ################################
-
-	    #If the fringe already contains s2, remove it, BECAUSE FOUND A SHORTER ADJ PATH	
-	    if(F.Exists(s2)):
-	        F.Remove(s2[0],s2[1])
-        
-	    s2[2] = round(Heuristic(s2) + s2[5],2)
-	
-            print("s2 F VALUE:",s2[2])
-
-            F.Insert(s2)
-    else:
-        
-	if(First[5] + C <s2[5]):
-	    #Found a better path, new parent
-    	    #Found a better path, new parent	
 	    s2[5] = round(First[5] + C,2)
 	    s2[3] = First[0]
 	    s2[4] = First[1]
@@ -284,12 +270,15 @@ def UpdateVertex(s1,s2):
             #print("s2 F VALUE CASE 2:",s2[2])
 
             F.Insert(s2)
-
+    
+    #if(len(F.List)>50000):
+            #sys.exit(0)
+	#Insert new s2 along with new G in fring
+    
     return s2
 
 #Returns Cumputed Heuristic given s1,s2 states.
 def Heuristic(s1):
-    global Goal
     Start = s1
     End = Goal
     
@@ -303,10 +292,10 @@ def Heuristic(s1):
     #return round(abs(End[0]-Start[0]) + abs(End[1]-Start[1])/100,2)
     
     #Euclidean Heuristic
-    return (((math.sqrt(float(End[0]-Start[0])*float(End[0]-Start[0]) + float(End[1]-Start[1])*float(End[1]-Start[1]) ))))
+    #return (((math.sqrt(float(End[0]-Start[0])*float(End[0]-Start[0]) + float(End[1]-Start[1])*float(End[1]-Start[1]) ))/100.00))
     
     #Trace A* Heuristic
-    #return round((math.ceil(math.sqrt(2)*min(abs(End[0]-Start[0]),abs(End[1]-Start[1])) + max(abs(End[0]-Start[0]),abs(End[1]-Start[1])) - min(abs(End[0]-Start[0]),abs(End[1]-Start[1])))/100.00),2)
+    return round((math.ceil(math.sqrt(2)*min(abs(End[0]-Start[0]),abs(End[1]-Start[1])) + max(abs(End[0]-Start[0]),abs(End[1]-Start[1])) - min(abs(End[0]-Start[0]),abs(End[1]-Start[1])))/100.00),2)
     
 
 #Checks if ENV representation is correct
@@ -316,48 +305,15 @@ def ClearToGo(Y,X):
  	#print ("Out of Bounds, hit a boundary")
 	return False
     if(ENV[Y][X]==1):
-	##print("")
+	#print("")
 	#print("Clear to Go To:",Y,X)
-	##print("")
+	#print("")
 	return True
     return False
 
 #Returns List of positions to go to
 
 #[ROW,COL,F(N),PRow,PCol,G(N)]
-
-#Return List of all edges including [x,y,f,px,py,g]
-def Edges(S):
-    global GRAPH
-    global PathSeq
-    global F
-
-    Tuples = []
-    print("\n\nSTART STATE:",S,"\n\n")
-
-    LastEntry = PathSeq[len(PathSeq)-1]
-
-    try:
-        #Iterate through tuples of graph of of current state...
-        for tupe in GRAPH[S[0],S[1]]:
-	    if(not F.Exists([tupe[0][0],tupe[0][1]])):
-	        Fx = S[5]+tupe[1]+Heuristic([tupe[0][0],tupe[0][1]])
-	        L = [
-	        tupe[0][0],
-	        tupe[0][1],
-	        Fx,
-	        S[0],
-	        S[1],
-	        S[5]+tupe[1]]
-	        Tuples.append(L)
-	   		
-        print("Next Up Tuples:",Tuples)
-    except:
-	print("Next Up Tuples ERR:",Tuples)
-	#sys.exit(-1)
-    return Tuples
-	
-	
 
 def NonCollisions(S):
     #print ("Non Collisions for ENV")
@@ -387,7 +343,6 @@ def NonCollisions(S):
     #DOWN 
     TempX = StartX
     TempY = StartY+1
-
     ##print("Temp X:",TempX," TempY: ",TempY)
     if(ClearToGo(TempY,TempX)and (P[0]!=TempY or P[1]!=TempX)):
         GoTo.append([TempY,TempX,S[5]+Cost([],[])+Heuristic([TempY,TempX]),StartY,StartX,S[5]+Cost([],[])])
@@ -468,6 +423,7 @@ def MaxLen():
 	    z=Ccount
     return y
 
+
 #Requests the position of the bot
 def RequestClient():
     #Start Process to request client
@@ -482,53 +438,53 @@ def RequestClient():
     return output
 #Move to a position which would be comprised of doubles rounded to 100th place after decimal
 def CommandClient(position):
-    PrevDir = os.getcwd()
-    if len(position<3):
+    if(len(position)<3):
 	position.append(0)
-    #print("ASTAR: Command Client to:",' '.join(position))
+    PrevDir = os.getcwd()
+    print("ASTAR: Command Client to:",' '.join(position))
     #Start Process to command client
     os.chdir("TBOTCLIENT")
     p = Popen(['python ./RunClient.py '+' '.join(position),''],stdin=PIPE,stdout=PIPE,stderr=PIPE,shell=True)
     output, err = p.communicate("Input data passed to subprocess")         
     rc = p.returncode
     #p.wait()
-    #print ("Returned to ASTAR:",rc,output)
+    print ("Returned to ASTAR:",rc,output)
     os.chdir(PrevDir)
     return output
-
-#S = [MAP,x,y,x,y]    
+#S = [MAP,x,y,x,y]  
 def main(S_IN):
-    global Start
     global Goal
     global ENV
     global ClosedList
     global PathSeq
     global F
-    global GRAPH
 
-    if(len(sys.argv[:])<6) and S_IN==sys.argv[:]:
-        print("MUST ENTER START [x,y] ARGuMENT AND GOAL [x,y] ARGUMENT + PATH_TO_MAZE_FILE")
+    if(len(sys.argv[:])<5 and S_IN==sys.argv[:]):
+        print("MUST ENTER START [row,col] ARGuMENT AND GOAL [row,col] ARGUMENT!")
 	sys.exit(-1)
+
+    #FDASTAR
+
     f = None
     if S_IN!=sys.argv[:]:
 	print ("Astar Called from another program")
 	#f = open("".join(S),'r')
 	ENV = S_IN[0]
-	#sys.exit(-1)
-	
+	#RC = RequestClient()
 	#sys.exit(-2) 
     #CC = CommandClient(["1.25","0.1","0.0"]) 
     #Requests Position Forever... Until Given
     #RC = RequestClient()
     #ASTAR
-    ##print ("Array")
+    #print ("Array")
     else:
         f = open(sys.argv[5],'r')
         x = f.read().splitlines()
         f.close()
-        ##print ("Array")
-        ##print (x)
+        #print ("Array")
+        #print (x)
         PrintENV(x)
+
 ###############################################################ASSUME GRID IS NXN#### AND PREFERRABLY EVEN###################################################################  
     sys.argv = S_IN
     L = MaxLen()
@@ -540,69 +496,65 @@ def main(S_IN):
 ###############################################################################################################################################################################################
 
     print("Midpoints: [%d,%d]"%(MidX,MidY))
-    print("GOTO 222222:",S_IN[1],S_IN[2],S_IN[3],S_IN[4])
+
     #First Entry for goal is x, second is y
-    GY = round(float(S_IN[3]),2)
-    #GY*=100
-    #GY = math.ceil(GY)
-    #GY = int(MidY+GY)
+    GY = round(float(sys.argv[4]),2)
+    GY*=100
+    GY = math.ceil(GY)
+    GY = int(MidY+GY)
     #if GY<=0 OR GY >0, set position should hold
-    GX = round(float(S_IN[4]),2)
-    #GX*=100
-    #GX = math.ceil(GX)
-    #GX = int(MidX+GX)
+    GX = round(float(sys.argv[3]),2)
+    GX*=100
+    GX = math.ceil(GX)
+    GX = int(MidX+GX)
     #If GX<=0 OR GX>0, set position should hold
     
     Goal = [GY,GX,0,GY,GX,sys.maxint]
 
-    print( "Goal:",Goal )
+    print( "Goal: [%d,%d]"%(GY,GX) )
 
-
-    #return
-    if(MidX+Goal[0]*100<0 or MidX+Goal[0]*100>len(ENV)-1 or MidY+Goal[1]*100<0 or MidY+Goal[1]*100>len(ENV[0])-1):
+    if(Goal[0]<0 or Goal[0]>len(ENV)-1 or Goal[1]<0 or Goal[1]>len(ENV[0])-1):
 	print("Goal is Out of bounds")
 	return
     
-    #if ENV[int(MidY+Goal[1]*100)][int(MidX + Goal[0]*100)] ==0:
-	#print ("Goal is inside of an obstacle")
-	#return
+    if ENV[Goal[0]][Goal[1]] == 0:
+        print ("Goal is inside of an obstacle")
+        return
 
     #First Entry for start is x, second is y
     SY = round(float(sys.argv[2]),2)
-    #SY*=100
-    #SY = math.ceil(SY)
-    #SY = int(MidY+SY)
+    SY*=100
+    SY = math.ceil(SY)
+    SY = int(MidY+SY)
     #If SY<=0 OR SY>0, set position should hold
     SX = round(float(sys.argv[1]),2)
-    #SX*=100
-    #SX = math.ceil(SX)
-    #SX = int(MidX+SX)
+    SX*=100
+    SX = math.ceil(SX)
+    SX = int(MidX+SX)
     #If SX <=0 OR SX >0, set position should hold   
 
-    S = [SX,SY,0,SX,SY,0]
+    S = [SY,SX,0,SY,SX,0]
 
     print("sTART:",S);
 
-
-    #return
-    if(int(MidX+S[0]*100)<0 or int(MidX+S[0]*100)>len(ENV)-1 or int(MidY+S[1]*100)<0 or int(MidY+S[1]*100)>len(ENV[0])-1):
+    if(S[0]<0 or S[0]>len(ENV)-1 or S[1]<0 or S[1]>len(ENV[0])-1):
         print("START is Out of bounds")
         return
 
-    Ss = [SX,SY,Heuristic(S),SX,SY,0]
+    Ss = [SY,SX,Heuristic(S),SY,SX,0]
 
     S = Ss
 
-    #if ENV[S[0]][S[1]] == 0:
-        #print ("Start is inside of an obstacle")
-        #return
+    if ENV[S[0]][S[1]] == 0:
+        print ("Start is inside of an obstacle")
+        return
 
     #Be sure that you insert triplets into the fringe
     
     #Initially Cost is 0 FOR CLASSICAL A*
     F.Insert(Ss)
     
-    ##print("FRINGE:",F.List)
+    #print("FRINGE:",F.List)
    
     if(ENV == []):
 	print ("No ENV to perform A*")
@@ -610,19 +562,8 @@ def main(S_IN):
 
     PathSeq.append(Ss)
 
-    Start = Ss
-
     #SList = []
 
-    #print ("\n\n\n\nENV:###############################################################################################\n\n\n\n",ENV)
-
-    GRAPH = S_IN[5]
-
-    print ("\nDIJKSTRAS TABLE:")
-    PrintGraph()
-	
-    #return 
-   
     #Expand then evaluate
     while(F.List!=[]):
 
@@ -630,68 +571,65 @@ def main(S_IN):
 
 	#if(S[3]==PathSeq[-1][0] and S[4] == PathSeq[-1][1]):  
 	PathSeq.append(S)
-        ENV[int(MidY+S[1]*100)][int(MidX+S[0]*100)] = 2
+        ENV[S[0]][S[1]] = 2
 	#else:
-	    ##print("FAILED WITH:",S,"AND PSEQ:",PathSeq)
+	    #print("FAILED WITH:",S,"AND PSEQ:",PathSeq)
 	    #ENV[S[0]][S[1]] = -2
 	    #sys.exit(0)
 	    #continue
 
 	if S[0]==Goal[0] and S[1]==Goal[1]:
 	    #PrintE()
-	    print ("\n\nFOUND GOAL!\n")
-	    print ("Uncompressed::",PathSeq[:])
-	    ##print("")
+	    print ("FOUND GOAL!")
+	    #print ("Uncompressed::",PathSeq[:])
+	    #print("")
 	    ############################################## This is equivalent to parent parent(s) function...
 	    Compress()
-	    #print("TRACE PATH (2's ONLY)")
+	    print("TRACE PATH (2's ONLY)")
 	    #PrintE()
 	    print ("Compressed::",PathSeq[:])
 	    #for I in PathSeq:
 	 	#CommandClient(I)
-   	    #sys.exit(-1)
+	    #PrintE()
 	    return PathSeq[:]
 	
-	ClosedList.append([S[0],S[1]])
+	ClosedList.append(S)
 
         #List of tuple successors
 	
-	#DONT NEED ANYMORE BECAUSE GRAPH CONTAINS NON COLLISION POINTS
-	#L = NonCollisions(S)
-        #FUNCTION FOR NEIGHBOR EDGES
-	#L is list of those vertices
-        L = Edges(S)
-	#sys.exit(0)
+	L = NonCollisions(S)
+
 	#print("ALL NON COLLISIONS:",L)
         #u = []
-	#O = []
+	O = []
 	#U = State()
-
-	##print("CLOSED LISTS",ClosedList)	
-	
+	#print("CLOSED LISTS",ClosedList)	
 	#Check if already visited and not in fringe
 	#t = 0
 	for u in L:
-	    m = [u[0],u[1]]
-	    O = u
-	    if m not in ClosedList:
+	    if u not in ClosedList:
 		
-		print(u," is not visited YET")
+		#print(u," is not visited YET")
 		
 		if not F.Exists(u):
-		    print(u," is not in fringe YET")
+		    #print(u," is not in fringe YET")
 		    
 		    O = u
 		    O[3] = -1
 		    O[4] = -1
    	 	    O[5] = sys.maxint
 		    
-   	 	    ENV[int(MidY+u[1]*100)][int(MidX+u[0]*100)] = 3
+   	 	    ENV[u[0]][u[1]] = 3
 		    #PrintE()
 		
 		#if(len(O)<3 or len(S)<3):
+#<<<<<<< HEAD
+		    ##print("ERROR, LENGTH NOT CORRECT")
+		    ##print("S:",S,"O:",O)
+#=======
 		    #print("ERROR, LENGTH NOT CORRECT")
 		    #print("S:",S,"O:",O)
+#>>>>>>> d3b8c44071bda09094435689829f4ceba38441e5
 		    #sys.exit(-1)
 				    	    
 		(UpdateVertex(S,O))    
@@ -702,6 +640,5 @@ def main(S_IN):
 	#PrintE()
     print ("NO GOAL FOUND!!!!")
     return None
-
 if __name__=="__main__":
     main(sys.argv[:])

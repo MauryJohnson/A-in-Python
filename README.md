@@ -1,4 +1,7 @@
-A* Search Algorithm
+A* Search Algorithm - 98.5% - FINISHED ASTAR, NOW ONTO FDA...
+python TestRun.py A
+
+
 
 python StartEGen.py map_5.txt
 Returns points labelling what the coordinates are.

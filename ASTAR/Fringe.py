@@ -67,11 +67,11 @@ class Fringe():
 	self.List.insert(I,L2)
 	return
     def Exists(self,S):
-	#print("Does :",S," Exist?")
+	print("Does :",S," Exist?")
 	for i in self.List:
 	    #print("I:",i)
 	    if(i[0]==S[0] and i[1]==S[1]):
-		#print("YES")
+		print("YES")
 		return True
-	#print("NO")
+	print("NO")
 	return False

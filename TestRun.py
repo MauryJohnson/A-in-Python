@@ -271,10 +271,10 @@ def main():
 		    #H = ASTAR([SGEN.Map],SG[0],SG[1])
 		    H = Astar.main([SGEN.Map,SG[0][0],SG[0][1],SG[1][0],SG[1][1],SGEN.ENV])	  
 	    	else:
-		    FDASTAR(SGEN.ENV,SG[0],SG[1])
-		    #H = DFAstar.main([SGEN.Map,SG[0][0],SG[0][1],SG[1][0],SG[1][1]])      
+		    #FDASTAR(SGEN.ENV,SG[0],SG[1])
+		    H = DFAstar.main([SGEN.Map,SG[0][0],SG[0][1],SG[1][0],SG[1][1],SGEN.ENV])      
 		#)
-		if(ITER>=10 and ITER%2==0):
+		if(ITER>=100 and ITER%2==0):
 		    return
 
 
