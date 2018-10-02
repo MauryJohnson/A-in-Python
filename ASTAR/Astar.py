@@ -60,7 +60,7 @@ def Compress():
 	    if(i[3]!=PathSeq[k][0] or i[4]!=PathSeq[k][1]):
 	        while(i[3]!=PathSeq[k][0] or i[4]!=PathSeq[k][1]): #and i[2] > PathSeq[k][2]):
 		    #print("POP NODES not Ancestors of GOAL PATH",PathSeq[k])   
-   		    ENV[PathSeq[k][0]][PathSeq[k][1]] = 4
+   		    ENV[int(MidY+PathSeq[k][1]*100)][int(MidX+PathSeq[k][0]*100)] = 4
 		    PathSeq.pop(k)
 		    k-=1
 		    if k<0:
@@ -139,19 +139,22 @@ def PrintGraph():
 	print("--------------NO GOAL EDGES???------------")
 def Cost(s1,s2):
     global GRAPH
- #... IS 1 for traditional A*, but is dependant on the diagonal dist for free-direction A*
-    #print ("Cost Func from Coordinates of s1 to Coordinates of s2")
-    #print (s1)
-    #print (s2)
-    #print ("+1")
-    ################################### STANDARD A* COST
-    #return 1.0 
-    ################################### STANDARD A* COST
-    #return 0.01
-
+    #LITERALLY ACCESS GRAPH[[s1[0],s1[1]], iterate through until can find the edge
     #RETURNS THE COST OF s1 to s2, IF connection from s1 and s2 does not exist, return sys.maxint
-    for item in GRAPH[[s1[0],s1[1]]]:
-	print("ITEM:",item)
+
+    for item in GRAPH[s1[0],s1[1]]:
+	print("COST CHECK ITEM 1:",item,"COMPARE TO ITEM:",s2)
+	if(item[0][0]==s2[0] and item[0][1]==s2[1]):
+	    print("Found Neighbor")
+	    return item[1]
+    
+    for item in GRAPH[s2[0],s2[1]]:
+	print("COST CHECK ITEM 2:",item,"COMPARE TO ITEM:",s1)
+	if(item[0][0]==s1[0] and item[0][1]==s1[1]):
+	    print("Found Neighbor")
+	    return item[1]
+    
+    return sys.maxint
 
 def grid(x,y):
     if(x<0 or x>len(ENV) or y<0 or y>len(ENV)):
@@ -262,6 +265,7 @@ def UpdateVertex(s1,s2):
 
 #Returns Cumputed Heuristic given s1,s2 states.
 def Heuristic(s1):
+    global Goal
     Start = s1
     End = Goal
     
@@ -297,6 +301,31 @@ def ClearToGo(Y,X):
 #Returns List of positions to go to
 
 #[ROW,COL,F(N),PRow,PCol,G(N)]
+
+#Return List of all edges including [x,y,f,px,py,g]
+def Edges(S):
+    global GRAPH
+    Tuples = []
+    print("\n\nSTART STATE:",S,"\n\n")
+    try:
+        #Iterate through tuples of graph of of current state...
+        for tupe in GRAPH[S[0],S[1]]:
+	    F = S[5]+tupe[1]+Heuristic([tupe[0][0],tupe[0][1]])
+	    L = [
+	    tupe[0][0],
+	    tupe[0][1],
+	    F,
+	    S[0],
+	    S[1],
+	    S[5]+tupe[1]]
+	    Tuples.append(L)
+        print("Next Up Tuples:",Tuples)
+    except:
+	print("Next Up Tuples ERR:",Tuples)
+	#sys.exit(-1)
+    return Tuples
+	
+	
 
 def NonCollisions(S):
     #print ("Non Collisions for ENV")
@@ -559,8 +588,8 @@ def main(S_IN):
 
     print ("\nDIJKSTRAS TABLE:")
     PrintGraph()
-
-    return 
+	
+    #return 
    
     #Expand then evaluate
     while(F.List!=[]):
@@ -569,7 +598,7 @@ def main(S_IN):
 
 	#if(S[3]==PathSeq[-1][0] and S[4] == PathSeq[-1][1]):  
 	PathSeq.append(S)
-        ENV[S[0]][S[1]] = 2
+        ENV[int(MidY+S[1]*100)][int(MidX+S[0]*100)] = 2
 	#else:
 	    ##print("FAILED WITH:",S,"AND PSEQ:",PathSeq)
 	    #ENV[S[0]][S[1]] = -2
@@ -578,7 +607,7 @@ def main(S_IN):
 
 	if S[0]==Goal[0] and S[1]==Goal[1]:
 	    #PrintE()
-	    #print ("FOUND GOAL!")
+	    print ("\n\nFOUND GOAL!\n")
 	    ##print ("Uncompressed::",PathSeq[:])
 	    ##print("")
 	    ############################################## This is equivalent to parent parent(s) function...
@@ -586,8 +615,9 @@ def main(S_IN):
 	    #print("TRACE PATH (2's ONLY)")
 	    #PrintE()
 	    print ("Compressed::",PathSeq[:])
-	    for I in PathSeq:
-	 	CommandClient(I)
+	    #for I in PathSeq:
+	 	#CommandClient(I)
+   	    #sys.exit(-1)
 	    return PathSeq[:]
 	
 	ClosedList.append(S)
@@ -596,7 +626,10 @@ def main(S_IN):
 	
 	#DONT NEED ANYMORE BECAUSE GRAPH CONTAINS NON COLLISION POINTS
 	#L = NonCollisions(S)
-
+        #FUNCTION FOR NEIGHBOR EDGES
+	#L is list of those vertices
+        L = Edges(S)
+	#sys.exit(0)
 	#print("ALL NON COLLISIONS:",L)
         #u = []
 	O = []
@@ -619,7 +652,7 @@ def main(S_IN):
 		    O[4] = -1
    	 	    O[5] = sys.maxint
 		    
-   	 	    ENV[u[0]][u[1]] = 3
+   	 	    ENV[int(MidY+u[1]*100)][int(MidX+u[0]*100)] = 3
 		    #PrintE()
 		
 		#if(len(O)<3 or len(S)<3):
