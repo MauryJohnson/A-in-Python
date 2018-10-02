@@ -26,6 +26,8 @@ F = Fringe()
 #Rows, Columns
 ENV = []
 
+GRAPH = []
+
 #Midpoints of graph in order to configure position
 #Given negative or positive x and y
 MidX = 0
@@ -35,6 +37,8 @@ MidY = 0
 
 #Goal =[5,5,0,5,5]
 Goal = []
+
+Start = []
 
 PathSeq = []
 
@@ -113,9 +117,29 @@ def PrintENV(x):
 	ENV.append(Succ)
 	p1+=1
 	#print ("")
+#ITEMS ARE EACH HASHED ITEM
+def PrintGraph():
+    global GRAPH
+    global Start
 
-
-def Cost(s1,s2): #... IS 1 for traditional A*, but is dependant on the diagonal dist for free-direction A*
+    print("ITEMS:")
+    for item in GRAPH:
+	print("ITEM:",item)
+    print("GRAPH TOTAL:")
+    print(GRAPH)
+    print("\n###########START EDGES?###############")
+    try: 
+	print(Start,"->>>>>>",GRAPH[Start[0],Start[1]])
+    except:
+	print("--------------NO START EDGES???------------")
+    print("\n###########GOAL EDGES?###############")
+    try: 
+	print(Goal,"->>>>>",GRAPH[Goal[0],Goal[1]])
+    except:
+	print("--------------NO GOAL EDGES???------------")
+def Cost(s1,s2):
+    global GRAPH
+ #... IS 1 for traditional A*, but is dependant on the diagonal dist for free-direction A*
     #print ("Cost Func from Coordinates of s1 to Coordinates of s2")
     #print (s1)
     #print (s2)
@@ -123,7 +147,11 @@ def Cost(s1,s2): #... IS 1 for traditional A*, but is dependant on the diagonal 
     ################################### STANDARD A* COST
     #return 1.0 
     ################################### STANDARD A* COST
-    return 0.01
+    #return 0.01
+
+    #RETURNS THE COST OF s1 to s2, IF connection from s1 and s2 does not exist, return sys.maxint
+    for item in GRAPH[[s1[0],s1[1]]]:
+	print("ITEM:",item)
 
 def grid(x,y):
     if(x<0 or x>len(ENV) or y<0 or y>len(ENV)):
@@ -409,11 +437,13 @@ def CommandClient(position):
 
 #S = [MAP,x,y,x,y]    
 def main(S_IN):
+    global Start
     global Goal
     global ENV
     global ClosedList
     global PathSeq
     global F
+    global GRAPH
 
     if(len(sys.argv[:])<6) and S_IN==sys.argv[:]:
         print("MUST ENTER START [x,y] ARGuMENT AND GOAL [x,y] ARGUMENT + PATH_TO_MAZE_FILE")
@@ -423,7 +453,8 @@ def main(S_IN):
 	print ("Astar Called from another program")
 	#f = open("".join(S),'r')
 	ENV = S_IN[0]
-	#RC = RequestClient()
+	#sys.exit(-1)
+	
 	#sys.exit(-2) 
     #CC = CommandClient(["1.25","0.1","0.0"]) 
     #Requests Position Forever... Until Given
@@ -448,58 +479,62 @@ def main(S_IN):
 ###############################################################################################################################################################################################
 
     print("Midpoints: [%d,%d]"%(MidX,MidY))
-    
+    print("GOTO 222222:",S_IN[1],S_IN[2],S_IN[3],S_IN[4])
     #First Entry for goal is x, second is y
-    GY = round(float(sys.argv[4]),2)
-    GY*=100
-    GY = math.ceil(GY)
-    GY = int(MidY+GY)
+    GY = round(float(S_IN[3]),2)
+    #GY*=100
+    #GY = math.ceil(GY)
+    #GY = int(MidY+GY)
     #if GY<=0 OR GY >0, set position should hold
-    GX = round(float(sys.argv[3]),2)
-    GX*=100
-    GX = math.ceil(GX)
-    GX = int(MidX+GX)
+    GX = round(float(S_IN[4]),2)
+    #GX*=100
+    #GX = math.ceil(GX)
+    #GX = int(MidX+GX)
     #If GX<=0 OR GX>0, set position should hold
     
     Goal = [GY,GX,0,GY,GX,sys.maxint]
 
-    print( "Goal: [%d,%d]"%(GY,GX) )
+    print( "Goal:",Goal )
 
-    if(Goal[0]<0 or Goal[0]>len(ENV)-1 or Goal[1]<0 or Goal[1]>len(ENV[0])-1):
+
+    #return
+    if(MidX+Goal[0]*100<0 or MidX+Goal[0]*100>len(ENV)-1 or MidY+Goal[1]*100<0 or MidY+Goal[1]*100>len(ENV[0])-1):
 	print("Goal is Out of bounds")
 	return
     
-    if ENV[Goal[0]][Goal[1]] ==0:
-	print ("Goal is inside of an obstacle")
-	return
+    #if ENV[int(MidY+Goal[1]*100)][int(MidX + Goal[0]*100)] ==0:
+	#print ("Goal is inside of an obstacle")
+	#return
 
     #First Entry for start is x, second is y
     SY = round(float(sys.argv[2]),2)
-    SY*=100
-    SY = math.ceil(SY)
-    SY = int(MidY+SY)
+    #SY*=100
+    #SY = math.ceil(SY)
+    #SY = int(MidY+SY)
     #If SY<=0 OR SY>0, set position should hold
     SX = round(float(sys.argv[1]),2)
-    SX*=100
-    SX = math.ceil(SX)
-    SX = int(MidX+SX)
+    #SX*=100
+    #SX = math.ceil(SX)
+    #SX = int(MidX+SX)
     #If SX <=0 OR SX >0, set position should hold   
 
-    S = [SY,SX,0,SY,SX,0]
+    S = [SX,SY,0,SX,SY,0]
 
     print("sTART:",S);
 
-    if(S[0]<0 or S[0]>len(ENV)-1 or S[1]<0 or S[1]>len(ENV[0])-1):
+
+    #return
+    if(int(MidX+S[0]*100)<0 or int(MidX+S[0]*100)>len(ENV)-1 or int(MidY+S[1]*100)<0 or int(MidY+S[1]*100)>len(ENV[0])-1):
         print("START is Out of bounds")
         return
 
-    Ss = [SY,SX,Heuristic(S),SY,SX,0]
+    Ss = [SX,SY,Heuristic(S),SX,SY,0]
 
     S = Ss
 
-    if ENV[S[0]][S[1]] == 0:
-        print ("Start is inside of an obstacle")
-        return
+    #if ENV[S[0]][S[1]] == 0:
+        #print ("Start is inside of an obstacle")
+        #return
 
     #Be sure that you insert triplets into the fringe
     
@@ -509,13 +544,24 @@ def main(S_IN):
     ##print("FRINGE:",F.List)
    
     if(ENV == []):
-	#print ("No ENV to perform A*")
+	print ("No ENV to perform A*")
 	return 
 
     PathSeq.append(Ss)
 
+    Start = Ss
+
     #SList = []
 
+    #print ("\n\n\n\nENV:###############################################################################################\n\n\n\n",ENV)
+
+    GRAPH = S_IN[5]
+
+    print ("\nDIJKSTRAS TABLE:")
+    PrintGraph()
+
+    return 
+   
     #Expand then evaluate
     while(F.List!=[]):
 
@@ -548,7 +594,8 @@ def main(S_IN):
 
         #List of tuple successors
 	
-	L = NonCollisions(S)
+	#DONT NEED ANYMORE BECAUSE GRAPH CONTAINS NON COLLISION POINTS
+	#L = NonCollisions(S)
 
 	#print("ALL NON COLLISIONS:",L)
         #u = []

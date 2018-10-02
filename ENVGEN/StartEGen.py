@@ -4,43 +4,74 @@ import math
 import sys
 #from Astar import Execute
 from subprocess import Popen, PIPE
+from VisibilityGraph import computeVisibilityGraph, addStartGoal, deleteStartGoal
 
 #ENV CAN EVEN JUST BE LIST OF ALL BLOCKS AND THEIR AREAS
 #Also Get 
 #ENV = []
 #EnvTable = []
 
+ENVtex = []
+ALL = []
+
 class StartEGen():   
     def __init__(self,VL,SG,ENVS):
 	self.EnvTable = []
  	self.ENV = []
 	#self.Borders = []
-	self.Y = -1
-	self.X = -1
-	self.MidY = -1
-	self.MidX = -1
+	#self.Y = -1
+	#self.X = -1
+	#self.MidY = -1
+	#self.MidX = -1
+	self.Start = sys.maxint
+	self.Goal = sys.maxint
+	#MAP = M
  	self.Map = []
 	#Should only keep track of the next start goal pair to use
 	self.Start_Goals = SG
 	self.Vertex_List = VL
+	
 	#Generate entire 2D ENV WITH BLOCKS
-	#self.ENV = mapMake 	
-	
-	#self.GenEnv(ENVS,VL)
-  	#Initialize start, goal, block vertices
-	#USE IN TESTRUN FOR EVERY SG PAIR
-########self.InitializeTable(VL)
-	#USE IN TESTRUN FOR EVERY SG PAIR
-        #Build entire table for A,DFA*
-#########self.BuildTable(SG[0],SG[1])
-	
 
-    #EnvTable[0] - > Vertex 1 -> Neighbors of V1
-    #EnvTable[0][0] -> Vertex 1
-    #EnvTable[0][0][0] -> Vertex 1[0]
-    #EnvTable[0][0][1] -> Vertes 1[1]
-    
-    #Generate entire 2D ENV WITH BLOCKS
+	print "\n\n\n\n\nALL:", ALL
+	#sys.exit(-1)	
+	M = mapMake(ALL)
+        self.Map= M
+	graph = computeVisibilityGraph(ALL, M)
+        print "\nGraph V1: \n", graph
+	self.ENV = graph
+
+	
+        #start = (float(SG[0][0]), float(SG[0][1]))
+	
+        #goal = (float(SG[1][0]), float(SG[1][1]))
+	
+        #addStartGoal(graph, M, start, goal)
+
+        #print "\nGraph V2: \n", start, graph[start]
+	#if(graph[start]!=[]):        
+	    #deleteStartGoal(graph, start, goal)
+	#print "START:",start	
+	#print "GOAL:",goal
+        #print "\nGraph V3: \n", graph
+    def ADDSG(self,Start,Goal):
+	print("$$$$$$$$$$$$$$$$$$$$$ADD START GOAL PAIRS$$$$$$$$$$$$$$$$$$:",Start,Goal)
+	start = (float(Start[0]), float(Start[1]))
+	goal = (float(Goal[0]), float(Goal[1]))
+	self.Start = start
+	self.Goal = goal
+	addStartGoal(self.ENV,self.Map,start,goal)
+	print "\nGraph V2: \n", start, self.ENV[start]
+
+    def DELETESG(self,Start,Goal):
+	print("@@@@@@@@@@@@@@@@@@@DELETE START GOAL PAIRS@@@@@@@@@@@@@@@:",Start,Goal)
+	start = (float(Start[0]), float(Start[1]))
+	goal = (float(Goal[0]), float(Goal[1]))
+	if(self.ENV[start]!=[]):	
+	    deleteStartGoal(self.ENV,start,goal)
+	print "START:",start	
+	print "GOAL:",goal
+        print "\nGraph V3: \n", self.ENV
 
     def Distance(self,Pairs):
         print "Compute distance"
@@ -341,6 +372,7 @@ def SplitList(List_of_All,Split):
     return E3
 
 def main(S):
+    global ALL
     if(len(sys.argv[:])<2 and S==sys.argv[:]):
         print("MUST ENTER MAP PATH IN ARG 1")
 	sys.exit(-1)
@@ -354,6 +386,8 @@ def main(S):
     else:
 	E2 = E.CreateENV(S)
     
+    ALL = E2
+
     #GET ALL PAIRS OF TYPES
     E3 = SplitList(E2,'-Start+Goal Pairs-')
     #Got Start Goal Pairs
@@ -369,9 +403,10 @@ def main(S):
     	
     print "StartGoalPairs:",StartGoalPairs,"\nENVS:",ENVS,"\nBLOCKS:",Blocks
     
-    SGEN = StartEGen(Blocks,StartGoalPairs,ENVS)
-    
     #sys.exit(-1)
+    SGEN = StartEGen(Blocks,StartGoalPairs,ENVS)
+     
+    
     return SGEN
 if __name__=="__main__":
     main(sys.argv[:])

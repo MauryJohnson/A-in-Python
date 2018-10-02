@@ -97,7 +97,28 @@ def StartGZB(R):
         RGZ_Pid.daemon = True	
         RGZ_Pid.start()
         print("Ros-Gazebo PID:",RGZ_Pid)
-	   
+
+def A(Map,StartX,StartY,GoalX,GoalY):
+    R = "python ASTAR/Astar.py"
+    p = Popen([R,''],stdin=PIPE,stdout=PIPE,stderr=PIPE,shell=True)
+    p.wait()
+    while p.poll() is None:
+	line = p.stdout.readline()
+	print line
+    output,err = p.communicate("Input data passed to subprocess")
+    rc = p.returncode
+    sys.exit(-1)    
+def ASTAR(Map,Start,Goal):
+    StartASTAR_Pid = -1
+    print("\nStart ASTAR")
+    try:StartASTAR_Pid = Process(target=A,args=[Map,Start[0],Start[1],Goal[0],Goal[1]])
+    except:
+	sys.exit(-1)
+    StartASTAR_Pid.daemon = True
+    StartASTAR_Pid.start()
+    #StartASTAR_Pid.wait()
+    print("FINISHED ASTAR")
+	
 def HD():
     #global RGZ_Pid
     global SState_Pid
@@ -206,29 +227,24 @@ def main():
     
     SOLN = [['map_1'],['map_2'],['map_3'],['map_4'],['map_5']]
     Sidx = 0
+
+    ITER = 0
+
     for i in MapList:        
 	print i
 	#BUILD List of Start_Goals
 	SGEN =  StartEGen.main(Maps[1]+i[1])	
-	SG = []
+	#SG = []
 	H = []
-	countSG = 0	
-	for j in SGEN.Start_Goals[:]:
+	countSG = 0
+	j = 0	
+	while j < len(SGEN.Start_Goals[:]):
 	    #print j
-	    if(countSG==2):
-
-		#print "STOP:\n"
-
-
-
-		#######################################BUILD MAP
-		#############BUILD MAP SPECIFIC TO START AND GOAL POSITIONS
-		
-		##SGEN.Map is the Map Table, changes depending on start and 			goal vertices...
-		#BUILD MAP SPECIFIC TO START AND GOAL POSITIONS
-		#SGEN.InitializeTable(SGEN.Vertex_List,SG)	
-  	  	#SGEN.BuildTable([SG[0][0],SG[0][1]],[SG[1][0],SG[1][1]])	
-		########################################################BUILDL MAP
+	    if((j+1)%2==0):
+		SG = [SGEN.Start_Goals[j-1],SGEN.Start_Goals[j]]
+		ITER+=1
+		SGEN.ADDSG(SG[0],SG[1])
+			########################################################BUILDL MAP
 		print ("\n\nFIRST GENERATE NEW GRAPH BASED ON START AND GOAL POSITIONS\n\n")
 
 
@@ -240,7 +256,7 @@ def main():
 	    	CommandJ2[2] = SG[0][1]
 	    	#Set World Map path
   	    	R = Command + "".join(CommandJ)+Command2+"".join(CommandJ2)+Command3+WMaps[0]+i[0]+")"
-	    	print "Start Command:",R
+	    	print "###########Start Command:#######",R
 
 	    	#StartGZB(R) #- Start RosGazebo
 		#StartSrv() #- Start Both Servers
@@ -249,30 +265,38 @@ def main():
 
 
 	        print "GOTO:",SG[0][0],SG[0][1],SG[1][0],SG[1][1], "MAP:",i
-		countSG= 0
+		#countSG= 0
 		#Start A* or FDA*
-	    	#if(ARG=="A"):
-		    #H = Astar.main([SGEN.Map,SG[0][0],SG[0][1],SG[1][0],SG[1][1]])	  
-	    	#else:
+	    	if(ARG=="A"):
+		    #H = ASTAR([SGEN.Map],SG[0],SG[1])
+		    H = Astar.main([SGEN.Map,SG[0][0],SG[0][1],SG[1][0],SG[1][1],SGEN.ENV])	  
+	    	else:
+		    FDASTAR(SGEN.ENV,SG[0],SG[1])
 		    #H = DFAstar.main([SGEN.Map,SG[0][0],SG[0][1],SG[1][0],SG[1][1]])      
 		#)
-
+		if(ITER>=10 and ITER%2==0):
+		    return
 
 
 		if(H!=None):
 		    Goal_Found = True
 		    PSeq = H
 	    	SOLN[Sidx].append([i[1],H])
-		SG = []
+		#countSG = 0		
+		#SG = []
 		#sys.exit(0)		
+		j+=1	
+
+		SGEN.DELETESG(SG[0],SG[1])	
 		continue
 
 	    #if(Sidx==3):
 	    #sys.exit(0)
 	    #################
-	    SG.append(j) 
-	    print "Add:",j
-	    countSG+=1
+	    #SG.append(j) 
+	    print "#########IDX#########:",j
+	    j+=1
+	    #countSG+=1
 	    #################
 	Sidx+=1
 	#if(Sidx==2):
