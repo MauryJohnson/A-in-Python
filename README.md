@@ -8,7 +8,7 @@ A
 OR
 
 FDA
-#These use the graphs with 100*100 resolution, cost for neighboring nodes is now 0.01, heuristic to goal = heuristic/10
+#These use the graphs with 100*100 resolution, cost for neighboring nodes is now 0.01, heuristic to goal = heuristic/100
 A_2D
 
 OR
