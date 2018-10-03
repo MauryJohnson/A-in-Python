@@ -1,20 +1,30 @@
-A* Search Algorithm - 98.5% - FINISHED ASTAR, NOW ONTO FDA...
-python TestRun.py A
+#First run roscore
+roscore &
+#Run rosgazebo
+ROBOT_INITIAL_POSE = "-x __ -y __" turtlebot_gazebo
+#These use The Visibility graph
+A
 
+OR
 
+FDA
+#These use the graphs with 100*100 resolution, cost for neighboring nodes is now 0.01, heuristic to goal = heuristic/10
+A_2D
 
-python StartEGen.py map_5.txt
-Returns points labelling what the coordinates are.
-requires StartEGen.py and EnvGen.py
+OR
 
-???python EnvCreator ??? - NOT CREATED YET - Creates environment Given details from abocve - fills in outlines of the entire environment and all of the obstacles
+FDA_2D
 
-python Astar.py 0.1 0.1 0.2 0.2 -> 10 10 20 20
-will travel to coordinates (0.2,0.2) from (0.1,0.1) -> 10,10 20,20 are the coordinates in the increased graph size (multiply by 100)
+#Example Run
+#Have maps ready
+roscore &
+#This is if you want to start with world 1
+ROBOT_INITIAL_POSE="-x -1 -y -1.75" roslaunch turtlebot_gazebo turtlebot_world.launch world_file:=$WORLD/world_1.world
 
-#######Process HANDLING
-Run a process handles for the servers
-Check if servers shut down because of robot or because started new rosgazebo process
-if server shut down because robot, exit
-if server shut down because of rosgezebo restart, start server again
-Every time rosgazebo starts, server must start
+python TestRun.py A map_1.txt -1 -1.75 -5 -1.75
+OR
+python TestRun.py FDA
+
+the first command for TestRun starts robot starting at that map and position, and iterates through the rest of maps and positions.
+
+the second command starts always at the first map and first position and iterates through the rest of maps and positions.

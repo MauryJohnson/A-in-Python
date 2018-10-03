@@ -4,8 +4,10 @@ sys.path.append("./TBOTCLIENT")
 sys.path.append("./ENVGEN")
 import StartEGen
 #Astar handles the path to map, and returns path seq
-import Astar
-import DFAstar
+import Astar_Visibility_Graph
+import DFAstar_Visibility_Graph
+import Astar_2D_Array
+import DFAstar_2D_Array
 import RunClient
 import os
 print("Current DIR:",os.getcwd())
@@ -61,11 +63,13 @@ def RGZ(R):
     output,err = p.communicate("Input data passed to subprocess")
     rc = p.returncode
     #os.chdir(PrevDir)
+    '''
     RGZ_Pid=-2
     SState_Pid.terminate()
     SState_Pid = -1
     SControl_Pid.terminate()
-    SControl_Pid = -1
+    SControl_Pid = -
+    '''
     return output
     
 def StartSrv():
@@ -141,20 +145,26 @@ def HD():
  	    Goal_Found = False
 	    PSeq = []
 	#Continuing until these change
-    if RGZ_Pid<0:
-	#Ros Gazebo and server exited cleanly
-	print "\nRos Gazebo and Servers exited smoothly"
-	H_Pid.terminate()
-	H_Pid = -1
-	print "Start HANDLER Again"
-	Handler()
-    else:
+    
         print "\nSERVER Status changed (BOT FAILURE?), Halt Program"
-        H_Pid.terminate()
-        H_Pid = -1
-	RGZ_Pid.terminate()
-	RGZ_Pid = -1
-        sys.exit(-1)
+        if(Goal_Found):
+	#Goal Found, PSeq is not empty
+	    for i in PSeq:	
+		#Iterate through all moves, wait for server to respond
+		IN = Astar.RequestClient()
+		print "WHERE:",IN
+		OUT = Astar.CommandClient(i)
+		print "COMMAND OUTPUT:",OUT
+ 	    Goal_Found = False
+	    PSeq = []
+	else:
+	    print "-------------HANDLER DETECTED NO GOAL FOUND-------------------"
+        #H_Pid.terminate()
+	sys.exit(-1)        
+	H_Pid = -1
+	#RGZ_Pid.terminate()
+	#RGZ_Pid = -1
+        
 
 def Handler():
     global RGZ_Pid
@@ -167,7 +177,8 @@ def Handler():
     #Runs Forever, until Server PID's Change back to <0
     print("\nStart Handler")
     print("Waiting for RosGazebo + Servers to Launch...")
-    while(RGZ_Pid<0 and SStart_Pid<0 and SControl_Pid<0):
+    k = 0
+    while(SState_Pid<0 and SControl_Pid<0):
 	k = k
     H_Pid = Process(target=HD)
     H_Pid.daemon = True	
@@ -177,14 +188,38 @@ def Handler():
 def main():
     global PSeq
     global Goal_Found
+    global H_Pid
+
+    StartSrv()
+    
+     #Handler()
+	
+    #H_Pid.join()
+
+    #return
+    MapPreference = ""
+    StartPreference = []
+    GoalPreference = []
 
     if((len(sys.argv[:])<2)):
         print("MUST ENTER Algorithm to run ''A'' or ''FDA'' ")
 	sys.exit(-1)
-    if(sys.argv[1]!="FDA" and sys.argv[1]!="A"):
+    if(sys.argv[1]!="FDA" and sys.argv[1]!="A" and sys.argv[1]!="A_2D" and sys.argv[1]!="FDA_2D"):
 	print("MUST ENTER Algorithm to run ''A'' or ''FDA'' ")
         sys.exit(-2)
-
+    if(len(sys.argv[:])>2):
+	#Third Argument will be map
+	MapPreference = sys.argv[2]
+	StartPreference = [(sys.argv[3]),(sys.argv[4])]
+	GoalPreference = [(sys.argv[5]),(sys.argv[6])]
+	print "Map Preferred:",MapPreference
+	print "Start Pref:",StartPreference
+	print "Goal Pref:",GoalPreference
+	#return
+	
+    #else:
+	#sys.exit(0)
+    
     ARG = sys.argv[1]
 
     #WMaps ='$WORLD/'#'../turtlebot_simulator/turtlebot_gazebo/worlds/'#'~/catkin.ws/src/comprobfall2018-hw1/turtlebot_simulator/turtlebot_gazebo/worlds/' ##$WORLD/ #
@@ -194,6 +229,12 @@ def main():
 
     MapList = [['world_1.world','map_1.txt'],['world_2.world','map_2.txt'],['world_3.world','map_3.txt'],['world_4.world','map_4.txt'],['world_5.world','map_5.txt']]
     
+    if(MapPreference not in [h[1] for h in MapList] and MapPreference !=""):
+	print "Must Enter maps:"
+	for k in MapList:
+	    print k[1]
+	return
+
     StartGoalList = []
 
     i = None
@@ -233,15 +274,35 @@ def main():
     for i in MapList:        
 	print i
 	#BUILD List of Start_Goals
-	SGEN =  StartEGen.main(Maps[1]+i[1])	
+		
 	#SG = []
+	Try_Map = False	
+	if MapPreference!= "":
+	    if MapPreference!=i[1]:
+		print "Looking for MAP:",MapPreference,", Next Map..."
+		#sys.exit(0)		
+		continue
+	SGEN =  StartEGen.main(Maps[1]+i[1])    
 	H = []
 	countSG = 0
-	j = 0	
+	j = 0
+	RunOnce = False	
 	while j < len(SGEN.Start_Goals[:]):
 	    #print j
 	    if((j+1)%2==0):
-		SG = [SGEN.Start_Goals[j-1],SGEN.Start_Goals[j]]
+		if(MapPreference!= ""):
+		    if(float(SGEN.Start_Goals[j-1][0]) != float(StartPreference[0]) or float(SGEN.Start_Goals[j-1][1]) != float(StartPreference[1]) or float(SGEN.Start_Goals[j][0])!=float(GoalPreference[0]) or float(SGEN.Start_Goals[j][1])!=float(GoalPreference[1])   ):
+			print("MY COORD::",StartPreference,GoalPreference,"Not Preferred: [%d,%d], Continue",(SGEN.Start_Goals[j-1],SGEN.Start_Goals[j]))
+			ITER+=1			
+			j+=1
+			#sys.exit(-1)
+		        continue
+		    else:
+			MapPreference = ""
+			RunOnce = True		    
+
+
+	        SG = [SGEN.Start_Goals[j-1],SGEN.Start_Goals[j]]
 		ITER+=1
 		SGEN.ADDSG(SG[0],SG[1])
 			########################################################BUILDL MAP
@@ -255,9 +316,10 @@ def main():
    	    	CommandJ2[0] = SG[0][0]
 	    	CommandJ2[2] = SG[0][1]
 	    	#Set World Map path
-  	    	R = Command + "".join(CommandJ)+Command2+"".join(CommandJ2)+Command3+WMaps[0]+i[0]+")"
+  	    	R = Command + "".join(CommandJ)#+Command2+"".join(CommandJ2)+Command3+WMaps[0]+i[0]+")"
 	    	print "###########Start Command:#######",R
-
+		if(MapPreference!=""):		
+		    RGZ(R)
 	    	#StartGZB(R) #- Start RosGazebo
 		#StartSrv() #- Start Both Servers
 	    	#Handler() #- First Waits until RosGazebo starts then Checks Both Servers
@@ -269,24 +331,46 @@ def main():
 		#Start A* or FDA*
 	    	if(ARG=="A"):
 		    #H = ASTAR([SGEN.Map],SG[0],SG[1])
-		    H = Astar.main([SGEN.Map,SG[0][0],SG[0][1],SG[1][0],SG[1][1],SGEN.ENV])	  
-	    	else:
+		    H = Astar_Visibility_Graph.main([SGEN.Map,SG[0][0],SG[0][1],SG[1][0],SG[1][1],SGEN.ENV])	  
+	    	elif(ARG=="FDA"):
 		    #FDASTAR(SGEN.ENV,SG[0],SG[1])
-		    H = DFAstar.main([SGEN.Map,SG[0][0],SG[0][1],SG[1][0],SG[1][1],SGEN.ENV])      
+		    H = DFAstar_Visibility_Graph.main([SGEN.Map,SG[0][0],SG[0][1],SG[1][0],SG[1][1],SGEN.ENV])      
 		#)
-		if(ITER>=100 and ITER%2==0):
-		    return
+		elif(ARG=="A_2D"):
+		    H = Astar_2D_Array.main([SGEN.Map,SG[0][0],SG[0][1],SG[1][0],SG[1][1],SGEN.ENV])
+	
+		elif(ARG=="FDA_2D"):
+		    H = DFAstar_2D_Array.main([SGEN.Map,SG[0][0],SG[0][1],SG[1][0],SG[1][1],SGEN.ENV])
+		
+		#if(ITER>=2 and ITER%2==0):
+		    #return
 
 
 		if(H!=None):
 		    Goal_Found = True
+		    for h in H:
+			
+		   	Where = Astar_Visibility_Graph.RequestClient()
+	 		print("WHERE:",Where)
+			h2 = [str(h[0]),str(h[1]),'0']
+			print ("SEND:",h)
+			Astar_Visibility_Graph.CommandClient(h2)		
+		    
+		     
 		    PSeq = H
+		    #H_Pid.join()
+
+		
 	    	SOLN[Sidx].append([i[1],H])
+		if(MapPreference!=""):
+		    MapPreference = ""
+		    #break
+
 		#countSG = 0		
 		#SG = []
 		#sys.exit(0)		
 		j+=1	
-
+		raw_input("Enter Anything To Continue (Make sure next position and map is set)")
 		SGEN.DELETESG(SG[0],SG[1])	
 		continue
 
@@ -299,13 +383,17 @@ def main():
 	    #countSG+=1
 	    #################
 	Sidx+=1
+	#if(RunOnce):
+	    #break	
 	#if(Sidx==2):
 	    #sys.exit(-3)
 
     print("ALL SOLUTIONS:",SOLN)
 	     
-
-    print("Start")
+    SState_Pid.join()
+    SControl_Pid.join()
+    
+    #print("Start")
     
 if __name__=="__main__":
     main()
